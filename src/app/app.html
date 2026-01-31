@@ -1,3 +1,9 @@
-<div class="p-6 bg-emerald-600 text-white rounded-xl">
-  TESTE Tailwind v3
+<nav class="p-4 bg-blue-600 text-white flex gap-4">
+  <a routerLink="/pets" class="hover:underline">Pets</a>
+  <a routerLink="/tutores" class="hover:underline">Tutores</a>
+  <a routerLink="/auth/login" class="hover:underline">Login</a>
+</nav>
+
+<div class="container mx-auto mt-8">
+  <router-outlet></router-outlet>
 </div>
