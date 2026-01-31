@@ -1,22 +1,109 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
+import {BehaviorSubject, Observable, tap} from 'rxjs';
+import {Router} from '@angular/router';
+import {AuthService} from '../services/auth.service';
+import {LoginRequest, LoginResponse, RefreshTokenResponse} from '../models/auth.model';
 
 @Injectable({providedIn: 'root'})
 export class AuthFacade {
-  private readonly _token$ = new BehaviorSubject<string | null>(localStorage.getItem('token'));
-  readonly token$ = this._token$.asObservable();
+  private readonly accessTokenSubject = new BehaviorSubject<string | null>(this.getStoredAccessToken());
+  private readonly refreshTokenSubject = new BehaviorSubject<string | null>(this.getStoredRefreshToken());
 
-  setToken(token: string) {
-    localStorage.setItem('token', token);
-    this._token$.next(token);
+  public readonly accessToken$ = this.accessTokenSubject.asObservable();
+
+  private tokenExpirationTimer?: ReturnType<typeof setTimeout>;
+
+  constructor(private authService: AuthService, private router: Router) {
+    this.initializeTokenRefresh();
   }
 
-  logout() {
-    localStorage.removeItem('token');
-    this._token$.next(null);
+  login(credentials: LoginRequest): Observable<LoginResponse> {
+    return this.authService.login(credentials).pipe(
+      tap(response => {
+        this.setTokens(response.access_token, response.refresh_token);
+        this.scheduleTokenRefresh(response.expires_in);
+        this.router.navigate(['/pets']);
+      })
+    );
+  }
+
+  logout(): void {
+    this.clearTokens();
+    this.clearTokenRefreshTimer();
+    this.router.navigate(['/auth/login']);
+  }
+
+  refreshToken(): Observable<RefreshTokenResponse> {
+    const refreshToken = this.refreshTokenSubject.value;
+    if (!refreshToken) {
+      this.logout();
+      throw new Error('Refresh token não disponível');
+    }
+
+    return this.authService.refreshToken(refreshToken).pipe(
+      tap(response => {
+        this.setTokens(response.access_token, response.refresh_token);
+        this.scheduleTokenRefresh(response.expires_in);
+      })
+    );
   }
 
   get isAuthenticated(): boolean {
-    return !!this._token$.value;
+    return !!this.accessTokenSubject.value;
+  }
+
+  get currentAccessToken(): string | null {
+    return this.accessTokenSubject.value;
+  }
+
+  get currentRefreshToken(): string | null {
+    return this.refreshTokenSubject.value;
+  }
+
+  private setTokens(accessToken: string, refreshToken: string): void {
+    localStorage.setItem('access_token', accessToken);
+    localStorage.setItem('refresh_token', refreshToken);
+    this.accessTokenSubject.next(accessToken);
+    this.refreshTokenSubject.next(refreshToken);
+  }
+
+  private clearTokens(): void {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    this.accessTokenSubject.next(null);
+    this.refreshTokenSubject.next(null);
+  }
+
+  private getStoredAccessToken(): string | null {
+    return localStorage.getItem('access_token');
+  }
+
+  private getStoredRefreshToken(): string | null {
+    return localStorage.getItem('refresh_token');
+  }
+
+  private scheduleTokenRefresh(expiresIn: number): void {
+    this.clearTokenRefreshTimer();
+    // Refresh 30s antes de expirar
+    const refreshTime = (expiresIn - 30) * 1000;
+    this.tokenExpirationTimer = setTimeout(() => {
+      this.refreshToken().subscribe({
+        error: () => this.logout()
+      });
+    }, refreshTime);
+  }
+
+  private clearTokenRefreshTimer(): void {
+    if (this.tokenExpirationTimer) {
+      clearTimeout(this.tokenExpirationTimer);
+    }
+  }
+
+  private initializeTokenRefresh(): void {
+    if (this.isAuthenticated) {
+      this.refreshToken().subscribe({
+        error: () => this.logout()
+      });
+    }
   }
 }
