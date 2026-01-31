@@ -1,1 +1,57 @@
-<p>pet-list works!</p>
+<div class="p-6 max-w-7xl mx-auto">
+  <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+    <h1 class="text-3xl font-bold text-gray-800">Pets Registry</h1>
+
+    <div class="relative w-full md:w-96">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Search by name..."
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
+    </div>
+  </header>
+
+  @if (loading$ | async) {
+    <div class="flex justify-center my-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+  } @else {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      @for (pet of pets$ | async; track pet.id) {
+        <div
+          class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-100">
+          <div class="h-48 bg-gray-200 relative">
+            <img
+              [src]="pet.foto?.url || 'assets/images/pet-placeholder.png'"
+              [alt]="pet.nome"
+              class="w-full h-full object-cover"
+            />
+          </div>
+
+          <div class="p-4">
+            <h3 class="text-xl font-bold text-gray-900 mb-1">{{ pet.nome }}</h3>
+            <p class="text-gray-600 text-sm">Age: {{ pet.idade }} years</p>
+
+            @if (pet.raca) {
+              <p class="text-gray-500 text-xs mt-1 italic">{{ pet.raca }}</p>
+            }
+
+            <button
+              class="mt-4 w-full bg-gray-50 hover:bg-blue-50 text-blue-600 font-semibold py-2 rounded-lg border border-blue-100 transition-colors">
+              View Details
+            </button>
+          </div>
+        </div>
+      } @empty {
+        <div class="col-span-full text-center py-12">
+          <p class="text-gray-500 text-lg">No pets found.</p>
+        </div>
+      }
+    </div>
+  }
+
+  <footer class="mt-12 flex justify-center gap-2">
+  </footer>
+</div>
