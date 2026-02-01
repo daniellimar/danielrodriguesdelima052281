@@ -1,18 +1,23 @@
-import {Component, OnInit, inject} from '@angular/core';
-import {AsyncPipe} from '@angular/common';
-import {PetFacade} from '../../../../core/facades/pet.facade';
-import {FormsModule} from '@angular/forms';
+import { Component, OnInit, inject } from '@angular/core';
+import { AsyncPipe } from '@angular/common';
+import { PetFacade } from '../../../../core/facades/pet.facade';
+import { PetCardComponent } from '../../components/pet-card/pet-card.component';
+import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 
 @Component({
   selector: 'app-pet-list',
   standalone: true,
-  imports: [AsyncPipe, FormsModule],
+  imports: [
+    AsyncPipe,
+    PetCardComponent,
+    SearchBarComponent,
+    PaginationComponent
+  ],
   templateUrl: './pet-list.component.html'
 })
 export class PetListComponent implements OnInit {
   private petFacade = inject(PetFacade);
-
-  protected readonly Math = Math;
 
   pets$ = this.petFacade.pets$;
   loading$ = this.petFacade.loading$;
@@ -22,51 +27,22 @@ export class PetListComponent implements OnInit {
 
   searchTerm = '';
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.petFacade.loadPets();
   }
 
-  onSearch() {
-    this.petFacade.loadPets(0, this.searchTerm);
+  onSearch(term: string): void {
+    this.searchTerm = term;
+    this.petFacade.loadPets(0, term);
   }
 
-  changePage(page: number): void {
+  onPageChange(page: number): void {
     this.petFacade.loadPets(page, this.searchTerm);
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  get pages(): number[] {
-    const total = this.petFacade.currentPage;
-    const current = this.petFacade.currentPage;
-
-    const maxPages = 5;
-    const half = Math.floor(maxPages / 2);
-
-    let start = Math.max(0, current - half);
-    let end = Math.min(total, start + maxPages);
-
-    if (end - start < maxPages) {
-      start = Math.max(0, end - maxPages);
-    }
-
-    return Array.from({length: end - start}, (_, i) => start + i);
-  }
-
-  get currentPageValue(): number {
-    let value: number | null = null;
-    this.currentPage$.subscribe(v => value = v).unsubscribe();
-    return value ?? 0;
-  }
-
-  get totalElementsValue(): number {
-    let value: number | null = null;
-    this.totalElements$.subscribe(v => value = v).unsubscribe();
-    return value ?? 0;
-  }
-
-  get totalPagesValue(): number {
-    let value: number | null = null;
-    this.totalPages$.subscribe(v => value = v).unsubscribe();
-    return value ?? 1;
+  onViewPetDetails(petId: number): void {
+    // TODO: Navegar para a tela de detalhes
+    console.log('View pet details:', petId);
   }
 }
