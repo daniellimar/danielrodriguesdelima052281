@@ -1,0 +1,33 @@
+<div class="bg-white rounded-xl shadow-md overflow-hidden
+            hover:shadow-lg transition-shadow border border-gray-100">
+
+  <div class="h-48 bg-gray-200 relative">
+    <img
+      [src]="pet.foto?.url ?? 'assets/images/pet-placeholder.png'"
+      [alt]="pet.nome"
+      class="w-full h-full object-cover"
+    />
+  </div>
+
+  <div class="p-4">
+    <h3 class="text-xl font-bold text-gray-900 mb-1">
+      {{ pet.nome }}
+    </h3>
+
+    <p class="text-gray-600 text-sm">
+      Idade: {{ pet.idade }} anos
+    </p>
+
+    <p class="text-gray-500 text-xs mt-1 italic">
+      {{ pet.raca ?? 'Raça não informada' }}
+    </p>
+
+    <button
+      (click)="onViewDetails()"
+      class="mt-4 w-full bg-gray-50 hover:bg-blue-50
+             text-blue-600 font-semibold py-2 rounded-lg
+             border border-blue-100 transition-colors">
+      Ver detalhes
+    </button>
+  </div>
+</div>
