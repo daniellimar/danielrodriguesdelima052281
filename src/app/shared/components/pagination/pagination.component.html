@@ -1,0 +1,67 @@
+@if (totalPages > 1) {
+  <footer class="mt-12 flex flex-col sm:flex-row
+                 justify-between items-center gap-4 px-4">
+
+    <!-- Info -->
+    <div class="text-sm text-gray-600">
+      Exibindo
+      <span class="font-semibold">
+        {{ currentPage * itemsPerPage + 1 }}
+      </span>
+      até
+      <span class="font-semibold">
+        {{ Math.min((currentPage + 1) * itemsPerPage, totalElements) }}
+      </span>
+      de
+      <span class="font-semibold">
+        {{ totalElements }}
+      </span>
+      resultados
+    </div>
+
+    <!-- Controls -->
+    <div class="flex items-center gap-2">
+
+      <!-- Previous -->
+      <button
+        (click)="changePage(currentPage - 1)"
+        [disabled]="currentPage === 0"
+        class="px-4 py-2 bg-white border border-gray-300 rounded-lg
+               disabled:opacity-50 disabled:cursor-not-allowed
+               hover:bg-gray-50 transition-colors font-medium text-sm">
+        Anterior
+      </button>
+
+      <!-- Pages -->
+      <div class="hidden sm:flex gap-1">
+        @for (page of pages; track page) {
+          <button
+            (click)="changePage(page)"
+            [class.bg-blue-600]="page === currentPage"
+            [class.text-white]="page === currentPage"
+            [class.bg-white]="page !== currentPage"
+            [class.text-gray-700]="page !== currentPage"
+            class="px-4 py-2 border border-gray-300 rounded-lg
+                   hover:bg-blue-50 transition-colors font-medium text-sm">
+            {{ page + 1 }}
+          </button>
+        }
+      </div>
+
+      <!-- Mobile -->
+      <div class="sm:hidden px-4 py-2 bg-gray-100 rounded-lg text-sm font-medium">
+        Página {{ currentPage + 1 }} de {{ totalPages }}
+      </div>
+
+      <!-- Next -->
+      <button
+        (click)="changePage(currentPage + 1)"
+        [disabled]="currentPage + 1 >= totalPages"
+        class="px-4 py-2 bg-white border border-gray-300 rounded-lg
+               disabled:opacity-50 disabled:cursor-not-allowed
+               hover:bg-gray-50 transition-colors font-medium text-sm">
+        Próximo
+      </button>
+    </div>
+  </footer>
+}
