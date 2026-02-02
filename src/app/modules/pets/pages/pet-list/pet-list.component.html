@@ -35,7 +35,8 @@
           @for (pet of pets; track pet.id) {
             <app-pet-card
               [pet]="pet"
-              (viewDetails)="onViewPetDetails($event)">
+              (viewDetails)="onViewPetDetails($event)"
+              (edit)="onEditPet($event)">>
             </app-pet-card>
           }
         </div>

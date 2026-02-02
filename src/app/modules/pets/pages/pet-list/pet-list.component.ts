@@ -47,4 +47,8 @@ export class PetListComponent implements OnInit {
   onViewPetDetails(petId: number): void {
     this.router.navigate(['/pets', petId]);
   }
+
+  onEditPet(id: number): void {
+    this.router.navigate(['/pets', id, 'editar']);
+  }
 }
