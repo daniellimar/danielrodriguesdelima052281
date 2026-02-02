@@ -22,7 +22,11 @@ export const routes: Routes = [
     pathMatch: 'full'
   },
   {
+    path: 'health',
+    loadChildren: () => import('./modules/health/health.routes').then(m => m.HEALTH_ROUTES)
+  },
+  {
     path: '**',
     redirectTo: 'pets'
-  }
+  },
 ];
