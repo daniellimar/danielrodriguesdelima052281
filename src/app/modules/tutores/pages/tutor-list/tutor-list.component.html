@@ -1,1 +1,117 @@
-<p>tutor-list works!</p>
+<div class="p-6 max-w-7xl mx-auto">
+
+  <!-- Header -->
+  <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+    <div class="flex flex-col">
+      <h1 class="text-3xl font-bold text-gray-800">Registro de Tutores</h1>
+      <button routerLink="/pets" class="text-sm text-blue-600 hover:underline text-left">
+        ← Voltar para Pets
+      </button>
+    </div>
+
+    <div class="flex gap-4 items-center w-full md:w-auto">
+      <app-search-bar
+        placeholder="Pesquisar por nome..."
+        [value]="searchTerm"
+        (search)="onSearch($event)"
+        class="flex-1 md:flex-initial">
+      </app-search-bar>
+
+      <button
+        routerLink="/tutores/novo"
+        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg
+             font-semibold transition-colors whitespace-nowrap">
+        + Novo Tutor
+      </button>
+    </div>
+  </header>
+
+  <!-- Loading -->
+  @if (loading$ | async) {
+    <div class="flex justify-center my-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+    </div>
+  } @else {
+
+    <!-- Tutores Grid -->
+    @if (tutores$ | async; as tutores) {
+      @if (tutores.length > 0) {
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          @for (tutor of tutores; track tutor.id) {
+            <div
+              class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
+
+              <!-- Foto do Tutor -->
+              <div class="aspect-square bg-gradient-to-br from-green-50 to-green-100 relative">
+                @if (tutor.foto?.url) {
+                  <img
+                    [src]="tutor.foto?.url"
+                    [alt]="tutor.nome"
+                    class="w-full h-full object-cover"
+                  />
+                } @else {
+                  <div class="w-full h-full flex items-center justify-center text-green-300 text-6xl">
+                    👤
+                  </div>
+                }
+              </div>
+
+              <!-- Informações -->
+              <div class="p-4">
+                <h3 class="text-xl font-bold text-gray-800 mb-2 truncate">
+                  {{ tutor.nome }}
+                </h3>
+
+                <div class="space-y-1 text-sm text-gray-600 mb-4">
+                  <p class="flex items-center gap-2">
+                    <span>📧</span>
+                    <span class="truncate">{{ tutor.email }}</span>
+                  </p>
+                  <p class="flex items-center gap-2">
+                    <span>📱</span>
+                    <span>{{ tutor.telefone }}</span>
+                  </p>
+                  <p class="flex items-center gap-2">
+                    <span>📍</span>
+                    <span class="truncate">{{ tutor.endereco }}</span>
+                  </p>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="flex gap-2 w-full">
+                  <button
+                    (click)="onViewTutorDetails(tutor.id)"
+                    class="w-[90%] bg-gray-50 hover:bg-green-50
+                           text-green-600 font-semibold py-2 rounded-lg
+                           border border-green-100 transition-colors">
+                    Ver detalhes
+                  </button>
+
+                  <button
+                    (click)="onEditTutor(tutor.id)"
+                    title="Editar Tutor"
+                    class="w-[10%] flex items-center justify-center bg-gray-50 hover:bg-gray-100
+                           text-gray-600 py-2 rounded-lg border border-gray-200 transition-colors">
+                    ✏️
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <div class="text-center py-12">
+          <p class="text-gray-500 text-lg">Nenhum tutor encontrado.</p>
+        </div>
+      }
+    }
+  }
+
+  <!-- Pagination -->
+  <app-pagination
+    [currentPage]="(currentPage$ | async) ?? 0"
+    [totalPages]="(totalPages$ | async) ?? 1"
+    [totalElements]="0"
+    (pageChange)="onPageChange($event)">
+  </app-pagination>
+</div>
