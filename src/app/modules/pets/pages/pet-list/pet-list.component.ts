@@ -1,9 +1,10 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
-import { PetFacade } from '../../../../core/facades/pet.facade';
-import { PetCardComponent } from '../../components/pet-card/pet-card.component';
-import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
-import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import {Component, OnInit, inject} from '@angular/core';
+import {AsyncPipe} from '@angular/common';
+import {PetFacade} from '../../../../core/facades/pet.facade';
+import {PetCardComponent} from '../../components/pet-card/pet-card.component';
+import {SearchBarComponent} from '../../../../shared/components/search-bar/search-bar.component';
+import {PaginationComponent} from '../../../../shared/components/pagination/pagination.component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-pet-list',
@@ -17,6 +18,7 @@ import { PaginationComponent } from '../../../../shared/components/pagination/pa
   templateUrl: './pet-list.component.html'
 })
 export class PetListComponent implements OnInit {
+  private router = inject(Router);
   private petFacade = inject(PetFacade);
 
   pets$ = this.petFacade.pets$;
@@ -38,11 +40,10 @@ export class PetListComponent implements OnInit {
 
   onPageChange(page: number): void {
     this.petFacade.loadPets(page, this.searchTerm);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({top: 0, behavior: 'smooth'});
   }
 
   onViewPetDetails(petId: number): void {
-    // TODO: Navegar para a tela de detalhes
-    console.log('View pet details:', petId);
+    this.router.navigate(['/pets', petId]);
   }
 }
