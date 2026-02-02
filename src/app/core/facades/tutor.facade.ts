@@ -24,6 +24,9 @@ export class TutorFacade {
   private readonly _totalPages$ = new BehaviorSubject<number>(0);
   readonly totalPages$ = this._totalPages$.asObservable();
 
+  private readonly _totalElements$ = new BehaviorSubject<number>(0);
+  readonly totalElements$ = this._totalElements$.asObservable();
+
   private readonly _currentPage$ = new BehaviorSubject<number>(0);
   readonly currentPage$ = this._currentPage$.asObservable();
 
@@ -35,6 +38,7 @@ export class TutorFacade {
       next: (res: TutorListResponse) => {
         this._tutores$.next(res.content);
         this._totalPages$.next(res.pageCount);
+        this._totalElements$.next(res.total);
         this._loading$.next(false);
       },
       error: () => this._loading$.next(false)

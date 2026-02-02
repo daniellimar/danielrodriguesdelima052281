@@ -22,6 +22,7 @@ export class TutorListComponent implements OnInit {
   loading$ = this.tutorFacade.loading$;
   currentPage$ = this.tutorFacade.currentPage$;
   totalPages$ = this.tutorFacade.totalPages$;
+  totalElements$ = this.tutorFacade.totalElements$;
 
   searchTerm = '';
   private searchSubject = new Subject<string>();

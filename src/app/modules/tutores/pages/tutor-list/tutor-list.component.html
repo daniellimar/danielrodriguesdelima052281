@@ -111,7 +111,7 @@
   <app-pagination
     [currentPage]="(currentPage$ | async) ?? 0"
     [totalPages]="(totalPages$ | async) ?? 1"
-    [totalElements]="0"
+    [totalElements]="(totalElements$ | async) ?? 0"
     (pageChange)="onPageChange($event)">
   </app-pagination>
 </div>
