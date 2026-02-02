@@ -14,4 +14,13 @@ export class PetCardComponent {
   onViewDetails(): void {
     this.viewDetails.emit(this.pet.id);
   }
+
+  defaultPetImage = {
+    url: 'images/pet-placeholder.png',
+    alt: 'Imagem padrão de pet'
+  };
+
+  get petImage() {
+    return this.pet.foto ?? this.defaultPetImage;
+  }
 }

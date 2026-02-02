@@ -3,8 +3,8 @@
 
   <div class="h-48 bg-gray-200 relative">
     <img
-      [src]="pet.foto?.url ?? 'assets/images/pet-placeholder.png'"
-      [alt]="pet.nome"
+      [src]="petImage.url"
+      [alt]="'Imagem para' + pet.nome"
       class="w-full h-full object-cover"
     />
   </div>
@@ -19,7 +19,7 @@
     </p>
 
     <p class="text-gray-500 text-xs mt-1 italic">
-      {{ pet.raca ?? 'Raça não informada' }}
+      {{ pet.raca }}
     </p>
 
     <button
