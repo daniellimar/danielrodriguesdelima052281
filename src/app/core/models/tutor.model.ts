@@ -1,3 +1,5 @@
+import {Pet} from './pet.model';
+
 export interface Foto {
   id: number;
   nome: string;
@@ -13,6 +15,7 @@ export interface Tutor {
   endereco: string;
   cpf: number;
   foto?: Foto;
+  pets?: Pet[];
 }
 
 export interface CreateTutorDto {
