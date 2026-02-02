@@ -39,16 +39,16 @@ export class TutorService {
   }
 
   // --- VINCULAÇÃO PET-TUTOR ---
-
   linkPet(tutorId: number, petId: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/${tutorId}/pets/${petId}`, {});
+    return this.http.post<void>(
+      `${this.apiUrl}/${tutorId}/pets/${petId}`,
+      {}
+    );
   }
 
   unlinkPet(tutorId: number, petId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${tutorId}/pets/${petId}`);
-  }
-
-  getPetsByTutor(tutorId: number): Observable<Pet[]> {
-    return this.http.get<Pet[]>(`${this.apiUrl}/${tutorId}/pets`);
+    return this.http.delete<void>(
+      `${this.apiUrl}/${tutorId}/pets/${petId}`
+    );
   }
 }
