@@ -1,3 +1,5 @@
+import {Tutor} from './tutor.model';
+
 export interface Foto {
   id: number;
   nome: string;
@@ -10,7 +12,9 @@ export interface Pet {
   nome: string;
   raca: string;
   idade: number;
+  tutorId?: number;
   foto?: Foto;
+  tutores?: Tutor[];
 }
 
 export interface PetListResponse {
