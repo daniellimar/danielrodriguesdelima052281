@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {environment} from '../../../environments/environment';
-import {PetListResponse} from '../models/pet.model';
+import {Pet, PetListResponse} from '../models/pet.model';
 
 @Injectable({providedIn: 'root'})
 export class PetService {
@@ -37,5 +37,9 @@ export class PetService {
     }
 
     return this.http.get<PetListResponse>(this.apiUrl, {params});
+  }
+
+  getPetById(id: number): Observable<Pet> {
+    return this.http.get<Pet>(`${this.apiUrl}/${id}`);
   }
 }

@@ -17,6 +17,9 @@ export class PetFacade {
   readonly totalPages$: Observable<number> = this._totalPages$.asObservable();
   readonly currentPage$: Observable<number> = this._currentPage$.asObservable();
 
+  private readonly _selectedPet$ = new BehaviorSubject<Pet | null>(null);
+  readonly selectedPet$ = this._selectedPet$.asObservable();
+
   constructor(private petService: PetService) {
   }
 
@@ -51,5 +54,19 @@ export class PetFacade {
 
   get currentPage(): number {
     return this._currentPage$.value;
+  }
+
+  loadPetById(id: number): void {
+    this._loading$.next(true);
+    this.petService.getPetById(id).subscribe({
+      next: (pet) => {
+        this._selectedPet$.next(pet);
+        this._loading$.next(false);
+      },
+      error: () => {
+        this._loading$.next(false);
+        this._selectedPet$.next(null);
+      }
+    });
   }
 }
