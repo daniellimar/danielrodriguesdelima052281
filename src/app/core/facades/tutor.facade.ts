@@ -1,11 +1,11 @@
-import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
-import { Tutor, TutorListResponse, CreateTutorDto } from '../models/tutor.model';
-import { Pet } from '../models/pet.model';
-import { TutorService } from '../services/tutor.service';
+import {inject, Injectable} from '@angular/core';
+import {BehaviorSubject, Observable, throwError} from 'rxjs';
+import {tap, catchError} from 'rxjs/operators';
+import {Tutor, TutorListResponse, CreateTutorDto} from '../models/tutor.model';
+import {Pet} from '../models/pet.model';
+import {TutorService} from '../services/tutor.service';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({providedIn: 'root'})
 export class TutorFacade {
   private tutorService = inject(TutorService);
 
@@ -51,22 +51,16 @@ export class TutorFacade {
     this.tutorService.getTutorById(id).subscribe({
       next: (tutor) => {
         this._selectedTutor$.next(tutor);
-        this.loadTutorPets(id);
+
+        this._tutorPets$.next(tutor.pets ?? []);
+
+        this._loading$.next(false);
       },
       error: () => {
         this._selectedTutor$.next(null);
+        this._tutorPets$.next([]);
         this._loading$.next(false);
       }
-    });
-  }
-
-  private loadTutorPets(tutorId: number): void {
-    this.tutorService.getPetsByTutor(tutorId).subscribe({
-      next: (pets) => {
-        this._tutorPets$.next(pets);
-        this._loading$.next(false);
-      },
-      error: () => this._loading$.next(false)
     });
   }
 
@@ -97,14 +91,30 @@ export class TutorFacade {
   }
 
   linkPet(tutorId: number, petId: number): Observable<void> {
+    this._loading$.next(true);
     return this.tutorService.linkPet(tutorId, petId).pipe(
-      tap(() => this.loadTutorPets(tutorId))
+      tap(() => {
+        this.loadTutorById(tutorId);
+        this._loading$.next(false);
+      }),
+      catchError((error) => {
+        this._loading$.next(false);
+        return throwError(() => error);
+      })
     );
   }
 
   unlinkPet(tutorId: number, petId: number): Observable<void> {
+    this._loading$.next(true);
     return this.tutorService.unlinkPet(tutorId, petId).pipe(
-      tap(() => this.loadTutorPets(tutorId))
+      tap(() => {
+        this.loadTutorById(tutorId);
+        this._loading$.next(false);
+      }),
+      catchError((error) => {
+        this._loading$.next(false);
+        return throwError(() => error);
+      })
     );
   }
 
