@@ -4,7 +4,7 @@ import {PetFacade} from '../../../../core/facades/pet.facade';
 import {PetCardComponent} from '../../components/pet-card/pet-card.component';
 import {SearchBarComponent} from '../../../../shared/components/search-bar/search-bar.component';
 import {PaginationComponent} from '../../../../shared/components/pagination/pagination.component';
-import {Router} from '@angular/router';
+import {Router, RouterLink} from '@angular/router';
 
 @Component({
   selector: 'app-pet-list',
@@ -13,7 +13,8 @@ import {Router} from '@angular/router';
     AsyncPipe,
     PetCardComponent,
     SearchBarComponent,
-    PaginationComponent
+    PaginationComponent,
+    RouterLink
   ],
   templateUrl: './pet-list.component.html'
 })

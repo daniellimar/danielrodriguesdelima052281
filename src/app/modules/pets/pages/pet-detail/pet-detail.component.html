@@ -19,6 +19,13 @@
           <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">
             {{ pet.nome }}
           </h1>
+
+          <button
+            [routerLink]="['/pets', pet.id, 'editar']"
+            class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition-colors flex items-center gap-2">
+            ✏️ Editar
+          </button>
+
           <p class="text-blue-100 text-lg flex items-center">
             <span class="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
               {{ pet.raca }}

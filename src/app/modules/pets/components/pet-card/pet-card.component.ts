@@ -10,6 +10,7 @@ import {DEFAULT_PET_IMAGE} from '../../../../shared/constants/default-images';
 })
 export class PetCardComponent {
   @Input({required: true}) pet!: Pet;
+  @Output() edit = new EventEmitter<number>();
   @Output() viewDetails = new EventEmitter<number>();
 
   onViewDetails(): void {
@@ -20,5 +21,9 @@ export class PetCardComponent {
 
   get petImage() {
     return this.pet.foto ?? this.defaultPetImage;
+  }
+
+  onEdit(): void {
+    this.edit.emit(this.pet.id);
   }
 }
