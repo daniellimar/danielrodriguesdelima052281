@@ -1,0 +1,110 @@
+<div class="max-w-5xl mx-auto p-6">
+  @if (loading$ | async) {
+    <div class="flex justify-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+  } @else if (tutor$ | async; as tutor) {
+
+    <!-- Header & Ações -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+      <div>
+        <button routerLink="/tutores" class="text-blue-600 hover:underline mb-2 block">← Voltar para lista</button>
+        <h1 class="text-4xl font-bold text-gray-900">{{ tutor.nome }}</h1>
+      </div>
+      <div class="flex gap-3">
+        <button
+          [routerLink]="['/tutores', tutor.id, 'editar']"
+          class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
+          Editar Perfil
+        </button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+      <!-- Coluna da Esquerda: Info do Tutor -->
+      <div class="lg:col-span-1 space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="aspect-square bg-gray-100">
+            @if (tutor.foto?.url) {
+              <img [src]="tutor.foto?.url" [alt]="tutor.nome" class="w-full h-full object-cover">
+            } @else {
+              <div class="w-full h-full flex items-center justify-center text-gray-400 text-6xl">👤</div>
+            }
+          </div>
+          <div class="p-6 space-y-4">
+            <div>
+              <label class="text-xs font-semibold text-gray-400 uppercase">E-mail</label>
+              <p class="text-gray-700 font-medium">{{ tutor.email }}</p>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-gray-400 uppercase">Telefone</label>
+              <p class="text-gray-700 font-medium">{{ tutor.telefone }}</p>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-gray-400 uppercase">CPF</label>
+              <p class="text-gray-700 font-medium">{{ tutor.cpf }}</p>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-gray-400 uppercase">Endereço</label>
+              <p class="text-gray-700 text-sm">{{ tutor.endereco }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coluna da Direita: Pets Vinculados -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800">Pets Vinculados</h2>
+            <button
+              class="bg-green-50 hover:bg-green-100 text-green-600 px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
+              <span>+</span> Vincular Pet
+            </button>
+          </div>
+
+          @if (pets$ | async; as pets) {
+            @if (pets.length > 0) {
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @for (pet of pets; track pet.id) {
+                  <div
+                    class="flex items-center p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors group">
+                    <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-100 mr-4">
+                      @if (pet.foto?.url) {
+                        <img [src]="pet.foto?.url" class="w-full h-full object-cover">
+                      } @else {
+                        <div class="w-full h-full flex items-center justify-center text-gray-400">🐾</div>
+                      }
+                    </div>
+                    <div class="flex-1">
+                      <h3 class="font-bold text-gray-800">{{ pet.nome }}</h3>
+                      <p class="text-sm text-gray-500">{{ pet.raca }} • {{ pet.idade }} anos</p>
+                    </div>
+                    <button
+                      (click)="onUnlinkPet(pet.id)"
+                      class="opacity-0 group-hover:opacity-100 p-2 text-red-400 hover:text-red-600 transition-all"
+                      title="Remover vínculo">
+                      🗑️
+                    </button>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                <p class="text-gray-500">Nenhum pet vinculado a este tutor.</p>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+    </div>
+
+  } @else {
+    <div class="text-center py-20">
+      <p class="text-gray-500">Tutor não encontrado.</p>
+      <button routerLink="/tutores" class="text-blue-600 mt-4 block">Voltar para lista</button>
+    </div>
+  }
+</div>
