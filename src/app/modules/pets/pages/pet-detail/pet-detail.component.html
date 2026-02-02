@@ -1,0 +1,105 @@
+<div class="max-w-4xl mx-auto p-6">
+  <!-- Botão Voltar -->
+  <button
+    routerLink="/pets"
+    class="flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors">
+    <span class="mr-2">←</span> Voltar para listagem
+  </button>
+
+  @if (loading$ | async) {
+    <div class="flex justify-center my-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+  } @else {
+    @if (pet$ | async; as pet) {
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+
+        <!-- Header com Destaque no Nome -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-white">
+          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">
+            {{ pet.nome }}
+          </h1>
+          <p class="text-blue-100 text-lg flex items-center">
+            <span class="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
+              {{ pet.raca }}
+            </span>
+            <span class="mx-3">•</span>
+            <span>{{ pet.idade }} anos</span>
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
+          <!-- Foto -->
+          <div>
+            <div class="rounded-xl overflow-hidden shadow-lg mb-6 aspect-square bg-gray-100">
+              <img
+                [src]="pet.foto?.url ?? 'assets/images/pet-placeholder.png'"
+                [alt]="pet.nome"
+                class="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          <!-- Detalhes e Tutores -->
+          <div class="space-y-6">
+            <!-- Seção de Tutores -->
+            <section class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+                Informações do(s) Tutor(es)
+              </h2>
+
+              @if (pet.tutores && pet.tutores.length > 0) {
+                <div class="space-y-4">
+                  @for (tutor of pet.tutores; track tutor.id) {
+                    <div class="flex items-start gap-4 pb-4 border-b border-gray-200 last:border-0 last:pb-0">
+                      <div class="bg-blue-100 p-3 rounded-full flex-shrink-0">
+                        @if (tutor.foto?.url) {
+                          <img
+                            [src]="tutor.foto?.url"
+                            [alt]="tutor.nome"
+                            class="w-10 h-10 rounded-full object-cover"
+                          />
+                        } @else {
+                          <span class="text-blue-600 font-bold text-xl">
+                            {{ tutor.nome[0] }}
+                          </span>
+                        }
+                      </div>
+                      <div class="flex-1">
+                        <p class="text-gray-900 font-bold text-lg">{{ tutor.nome }}</p>
+
+                        @if (tutor.telefone) {
+                          <p class="text-gray-600 flex items-center mt-1 text-sm">
+                            <span class="mr-2">📞</span> {{ tutor.telefone }}
+                          </p>
+                        }
+
+                        @if (tutor.email) {
+                          <p class="text-gray-600 flex items-center mt-1 text-sm">
+                            <span class="mr-2">✉️</span> {{ tutor.email }}
+                          </p>
+                        }
+
+                        @if (tutor.endereco) {
+                          <p class="text-gray-600 flex items-center mt-1 text-sm">
+                            <span class="mr-2">📍</span> {{ tutor.endereco }}
+                          </p>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="text-gray-500 italic">Este pet ainda não possui tutor cadastrado.</p>
+              }
+            </section>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="text-center py-20">
+        <p class="text-gray-500 text-xl">Pet não encontrado.</p>
+      </div>
+    }
+  }
+</div>
