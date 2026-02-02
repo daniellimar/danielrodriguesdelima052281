@@ -4,6 +4,12 @@ import {Observable} from 'rxjs';
 import {environment} from '../../../environments/environment';
 import {Pet, PetListResponse} from '../models/pet.model';
 
+export interface CreatePetDto {
+  nome: string;
+  raca: string;
+  idade: number;
+}
+
 @Injectable({providedIn: 'root'})
 export class PetService {
   private readonly apiUrl = `${environment.apiUrl}/v1/pets`;
@@ -41,5 +47,23 @@ export class PetService {
 
   getPetById(id: number): Observable<Pet> {
     return this.http.get<Pet>(`${this.apiUrl}/${id}`);
+  }
+
+  createPet(pet: CreatePetDto): Observable<Pet> {
+    return this.http.post<Pet>(this.apiUrl, pet);
+  }
+
+  updatePet(id: number, pet: CreatePetDto): Observable<Pet> {
+    return this.http.put<Pet>(`${this.apiUrl}/${id}`, pet);
+  }
+
+  deletePet(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  uploadPhoto(petId: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('foto', file);
+    return this.http.post(`${this.apiUrl}/${petId}/fotos`, formData);
   }
 }
