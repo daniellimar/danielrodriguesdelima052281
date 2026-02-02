@@ -1,5 +1,6 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
 import {Pet} from '../../../../core/models/pet.model';
+import {DEFAULT_PET_IMAGE} from '../../../../shared/constants/default-images';
 
 @Component({
   selector: 'app-pet-card',
@@ -15,10 +16,7 @@ export class PetCardComponent {
     this.viewDetails.emit(this.pet.id);
   }
 
-  defaultPetImage = {
-    url: 'images/pet-placeholder.png',
-    alt: 'Imagem padrão de pet'
-  };
+  defaultPetImage = DEFAULT_PET_IMAGE;
 
   get petImage() {
     return this.pet.foto ?? this.defaultPetImage;

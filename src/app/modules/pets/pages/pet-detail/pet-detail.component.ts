@@ -2,6 +2,7 @@ import {Component, OnInit, Input, inject} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {PetFacade} from '../../../../core/facades/pet.facade';
+import {DEFAULT_PET_IMAGE} from '../../../../shared/constants/default-images';
 
 @Component({
   selector: 'app-pet-detail',
@@ -23,4 +24,6 @@ export class PetDetailComponent implements OnInit {
       this.petFacade.loadPetById(Number(this.id));
     }
   }
+
+  defaultPetImage = DEFAULT_PET_IMAGE;
 }
