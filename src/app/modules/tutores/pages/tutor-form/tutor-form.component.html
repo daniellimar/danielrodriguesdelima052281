@@ -1,0 +1,181 @@
+<div class="max-w-2xl mx-auto p-6">
+  <!-- Header -->
+  <div class="mb-8">
+    <button
+      routerLink="/tutores"
+      class="flex items-center text-blue-600 hover:text-blue-800 mb-4 transition-colors">
+      <span class="mr-2">←</span> Voltar
+    </button>
+    <h1 class="text-3xl font-bold text-gray-900">
+      {{ isEditMode ? 'Editar Tutor' : 'Cadastrar Novo Tutor' }}
+    </h1>
+  </div>
+
+  <!-- Formulário -->
+  <form [formGroup]="tutorForm" (ngSubmit)="onSubmit()" class="bg-white rounded-xl shadow-lg p-8 space-y-6">
+
+    <!-- Upload de Foto -->
+    <div class="flex flex-col items-center">
+      <div class="relative w-40 h-40 mb-4">
+        @if (previewUrl) {
+          <img
+            [src]="previewUrl"
+            alt="Preview"
+            class="w-full h-full object-cover rounded-full border-4 border-blue-100"
+          />
+        } @else {
+          <div class="w-full h-full bg-gray-200 rounded-full flex items-center justify-center">
+            <span class="text-gray-400 text-4xl">👤</span>
+          </div>
+        }
+      </div>
+
+      <label class="cursor-pointer bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-lg transition-colors">
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onFileSelected($event)"
+          class="hidden"
+        />
+        Escolher Foto
+      </label>
+    </div>
+
+    <!-- Nome Completo -->
+    <div>
+      <label for="nome" class="block text-sm font-medium text-gray-700 mb-2">
+        Nome Completo *
+      </label>
+      <input
+        id="nome"
+        type="text"
+        formControlName="nome"
+        placeholder="Ex: João da Silva"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg
+               focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        [class.border-red-500]="nomeControl?.invalid && nomeControl?.touched"
+      />
+      @if (nomeControl?.invalid && nomeControl?.touched) {
+        <p class="mt-1 text-sm text-red-600">
+          @if (nomeControl?.errors?.['required']) {
+            Nome é obrigatório
+          } @else if (nomeControl?.errors?.['minlength']) {
+            Nome deve ter pelo menos 3 caracteres
+          }
+        </p>
+      }
+    </div>
+
+    <!-- Email -->
+    <div>
+      <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+        E-mail *
+      </label>
+      <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="Ex: joao.silva@email.com"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg
+               focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        [class.border-red-500]="emailControl?.invalid && emailControl?.touched"
+      />
+      @if (emailControl?.invalid && emailControl?.touched) {
+        <p class="mt-1 text-sm text-red-600">
+          @if (emailControl?.errors?.['required']) {
+            E-mail é obrigatório
+          } @else if (emailControl?.errors?.['email']) {
+            E-mail inválido
+          }
+        </p>
+      }
+    </div>
+
+    <!-- Telefone -->
+    <div>
+      <label for="telefone" class="block text-sm font-medium text-gray-700 mb-2">
+        Telefone *
+      </label>
+      <input
+        id="telefone"
+        type="text"
+        formControlName="telefone"
+        placeholder="Ex: (11) 91234-5678"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg
+               focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        [class.border-red-500]="telefoneControl?.invalid && telefoneControl?.touched"
+      />
+      @if (telefoneControl?.invalid && telefoneControl?.touched) {
+        <p class="mt-1 text-sm text-red-600">Telefone é obrigatório</p>
+      }
+    </div>
+
+    <!-- Endereço -->
+    <div>
+      <label for="endereco" class="block text-sm font-medium text-gray-700 mb-2">
+        Endereço *
+      </label>
+      <textarea
+        id="endereco"
+        formControlName="endereco"
+        rows="3"
+        placeholder="Ex: Rua das Flores, 123, Bairro Centro, São Paulo - SP"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg
+               focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none"
+        [class.border-red-500]="enderecoControl?.invalid && enderecoControl?.touched">
+      </textarea>
+      @if (enderecoControl?.invalid && enderecoControl?.touched) {
+        <p class="mt-1 text-sm text-red-600">Endereço é obrigatório</p>
+      }
+    </div>
+
+    <!-- CPF -->
+    <div>
+      <label for="cpf" class="block text-sm font-medium text-gray-700 mb-2">
+        CPF (apenas números) *
+      </label>
+      <input
+        id="cpf"
+        type="text"
+        formControlName="cpf"
+        placeholder="Ex: 12345678901"
+        maxlength="11"
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg
+               focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        [class.border-red-500]="cpfControl?.invalid && cpfControl?.touched"
+      />
+      @if (cpfControl?.invalid && cpfControl?.touched) {
+        <p class="mt-1 text-sm text-red-600">
+          @if (cpfControl?.errors?.['required']) {
+            CPF é obrigatório
+          } @else if (cpfControl?.errors?.['pattern']) {
+            CPF deve conter exatamente 11 dígitos
+          }
+        </p>
+      }
+    </div>
+
+    <!-- Botões -->
+    <div class="flex gap-4 pt-4">
+      <button
+        type="button"
+        routerLink="/tutores"
+        class="flex-1 px-6 py-3 border border-gray-300 rounded-lg
+               hover:bg-gray-50 transition-colors font-medium">
+        Cancelar
+      </button>
+      <button
+        type="submit"
+        [disabled]="loading$ | async"
+        class="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg
+               hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed
+               transition-colors font-medium flex items-center justify-center">
+        @if (loading$ | async) {
+          <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+        } @else {
+          {{ isEditMode ? 'Salvar Alterações' : 'Cadastrar Tutor' }}
+        }
+      </button>
+    </div>
+  </form>
+</div>
