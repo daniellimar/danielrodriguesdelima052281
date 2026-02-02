@@ -59,6 +59,7 @@
           <div class="flex justify-between items-center mb-6">
             <h2 class="text-2xl font-bold text-gray-800">Pets Vinculados</h2>
             <button
+              (click)="onOpenLinkPetModal()"
               class="bg-green-50 hover:bg-green-100 text-green-600 px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2">
               <span>+</span> Vincular Pet
             </button>
@@ -108,3 +109,11 @@
     </div>
   }
 </div>
+
+<!-- Modal de Vinculação -->
+@if (showLinkPetModal) {
+  <app-link-pet-modal
+    (close)="onCloseLinkPetModal()"
+    (selectPet)="onLinkPet($event)">
+  </app-link-pet-modal>
+}
