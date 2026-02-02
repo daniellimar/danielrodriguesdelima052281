@@ -1,0 +1,114 @@
+<div class="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-md mt-10">
+  <h1 class="text-2xl font-bold mb-6 text-gray-800">System Health Monitor</h1>
+
+  @if (loading$ | async) {
+    <p class="text-gray-500">Verificando integridade do sistema...</p>
+  }
+
+  @if (health$ | async; as health) {
+    <!-- Status Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <!-- Liveness -->
+      <div class="p-4 rounded-lg border"
+           [class.bg-green-50]="health.liveness === 'UP'"
+           [class.border-green-200]="health.liveness === 'UP'"
+           [class.bg-red-50]="health.liveness === 'DOWN'"
+           [class.border-red-200]="health.liveness === 'DOWN'"
+      >
+        <span class="text-sm font-semibold uppercase tracking-wider text-gray-600">Liveness</span>
+        <p class="text-2xl font-bold mt-1"
+           [class.text-green-700]="health.liveness === 'UP'"
+           [class.text-red-700]="health.liveness === 'DOWN'"
+        >
+          {{ health.liveness }}
+        </p>
+        <p class="text-xs text-gray-500 mt-2">Processo do servidor ativo</p>
+      </div>
+
+      <!-- Readiness -->
+      <div class="p-4 rounded-lg border"
+           [class.bg-blue-50]="health.readiness === 'UP'"
+           [class.border-blue-200]="health.readiness === 'UP'"
+           [class.bg-red-50]="health.readiness === 'DOWN'"
+           [class.border-red-200]="health.readiness === 'DOWN'"
+      >
+        <span class="text-sm font-semibold uppercase tracking-wider text-gray-600">Readiness</span>
+        <p class="text-2xl font-bold mt-1"
+           [class.text-blue-700]="health.readiness === 'UP'"
+           [class.text-red-700]="health.readiness === 'DOWN'"
+        >
+          {{ health.readiness }}
+        </p>
+        <p class="text-xs text-gray-500 mt-2">Pronto para receber tráfego</p>
+      </div>
+    </div>
+
+    <!-- Endpoint Testado -->
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+      <p class="text-xs font-semibold text-gray-600 mb-2">ENDPOINT TESTADO</p>
+      <code class="text-sm text-blue-600 break-all">{{ health.endpoint }}</code>
+      <p class="text-xs text-gray-500 mt-2">
+        Última verificação: {{ health.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}
+      </p>
+    </div>
+
+    <!-- Detalhes Técnicos -->
+    @if (health.details) {
+      <div class="bg-gray-900 rounded-lg p-4 mb-6">
+        <p class="text-blue-400 text-xs font-mono mb-2">// Response Details</p>
+        <pre class="text-green-400 text-xs overflow-auto">{{ health.details | json }}</pre>
+      </div>
+    }
+  }
+
+  <!-- Botão de Refresh -->
+  <button
+    (click)="reload()"
+    [disabled]="loading$ | async"
+    class="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+  >
+    @if (loading$ | async) {
+      Verificando...
+    } @else {
+      Refresh Status
+    }
+  </button>
+
+  <!-- Histórico de Logs -->
+  @if (history$ | async; as history) {
+    @if (history.length > 0) {
+      <div class="mt-8">
+        <h2 class="text-lg font-bold text-gray-800 mb-4">📋 Histórico de Verificações</h2>
+        <div class="space-y-2">
+          @for (log of history; track log.timestamp) {
+            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-xs text-gray-500">
+                  {{ log.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}
+                </span>
+                <div class="flex gap-2">
+                  <span class="px-2 py-1 rounded text-xs font-semibold"
+                        [class.bg-green-100]="log.liveness === 'UP'"
+                        [class.text-green-700]="log.liveness === 'UP'"
+                        [class.bg-red-100]="log.liveness === 'DOWN'"
+                        [class.text-red-700]="log.liveness === 'DOWN'"
+                  >
+                    L: {{ log.liveness }}
+                  </span>
+                  <span class="px-2 py-1 rounded text-xs font-semibold"
+                        [class.bg-blue-100]="log.readiness === 'UP'"
+                        [class.text-blue-700]="log.readiness === 'UP'"
+                        [class.bg-red-100]="log.readiness === 'DOWN'"
+                        [class.text-red-700]="log.readiness === 'DOWN'"
+                  >
+                    R: {{ log.readiness }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>
