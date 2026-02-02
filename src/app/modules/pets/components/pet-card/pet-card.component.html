@@ -22,12 +22,22 @@
       {{ pet.raca }}
     </p>
 
-    <button
-      (click)="onViewDetails()"
-      class="mt-4 w-full bg-gray-50 hover:bg-blue-50
-             text-blue-600 font-semibold py-2 rounded-lg
-             border border-blue-100 transition-colors">
-      Ver detalhes
-    </button>
+    <div class="flex gap-2 mt-4 w-full">
+      <button
+        (click)="onViewDetails()"
+        class="w-[80%] bg-gray-50 hover:bg-blue-50
+           text-blue-600 font-semibold py-2 rounded-lg
+           border border-blue-100 transition-colors">
+        Ver detalhes
+      </button>
+
+      <button
+        (click)="onEdit()"
+        title="Editar Pet"
+        class="w-[20%] flex items-center justify-center bg-gray-50 hover:bg-gray-100
+           text-gray-600 py-2 rounded-lg border border-gray-200 transition-colors">
+        ✏️
+      </button>
+    </div>
   </div>
 </div>
