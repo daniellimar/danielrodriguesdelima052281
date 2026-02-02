@@ -15,6 +15,14 @@ export interface Tutor {
   foto?: Foto;
 }
 
+export interface CreateTutorDto {
+  nome: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  cpf: number;
+}
+
 export interface TutorListResponse {
   page: number;
   size: number;
