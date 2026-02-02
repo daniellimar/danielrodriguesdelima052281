@@ -1,7 +1,28 @@
-<nav class="p-4 bg-blue-600 text-white flex gap-4">
-  <a routerLink="/pets" class="hover:underline">Pets</a>
-  <a routerLink="/tutores" class="hover:underline">Tutores</a>
-  <a routerLink="/auth/login" class="hover:underline">Login</a>
+<nav class="bg-white border-b border-gray-200 py-4 px-6 mb-6">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <div class="flex items-center gap-8">
+      <span class="text-xl font-bold text-blue-600">PetManager</span>
+
+      @if (authFacade.isAuthenticated) {
+        <div class="flex gap-6">
+          <a routerLink="/pets" routerLinkActive="text-blue-600 font-bold"
+             class="text-gray-600 hover:text-blue-600 transition-colors">
+            Pets
+          </a>
+          <a routerLink="/tutores" routerLinkActive="text-blue-600 font-bold"
+             class="text-gray-600 hover:text-blue-600 transition-colors">
+            Tutores
+          </a>
+        </div>
+      }
+    </div>
+
+    @if (authFacade.isAuthenticated) {
+      <button (click)="onLogout()" class="text-gray-500 hover:text-red-600 text-sm font-medium transition-colors">
+        Sair
+      </button>
+    }
+  </div>
 </nav>
 
 <div class="container mx-auto mt-8">
