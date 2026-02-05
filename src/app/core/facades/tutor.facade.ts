@@ -30,18 +30,25 @@ export class TutorFacade {
   private readonly _currentPage$ = new BehaviorSubject<number>(0);
   readonly currentPage$ = this._currentPage$.asObservable();
 
+  private readonly _searchTerm$ = new BehaviorSubject<string>('');
+  readonly searchTerm$ = this._searchTerm$.asObservable();
+
   loadTutores(page = 0, nome = ''): void {
     this._loading$.next(true);
     this._currentPage$.next(page);
+    this._searchTerm$.next(nome);
 
     this.tutorService.getTutores(page, nome).subscribe({
       next: (res: TutorListResponse) => {
-        this._tutores$.next(res.content);
-        this._totalPages$.next(res.pageCount);
-        this._totalElements$.next(res.total);
+        this._tutores$.next(res.content || []);
+        this._totalPages$.next(res.pageCount || 0);
+        this._totalElements$.next(res.total || 0);
         this._loading$.next(false);
       },
-      error: () => this._loading$.next(false)
+      error: () => {
+        this._loading$.next(false);
+        this._totalElements$.next(0);
+      }
     });
   }
 
@@ -55,9 +62,7 @@ export class TutorFacade {
     this.tutorService.getTutorById(id).subscribe({
       next: (tutor) => {
         this._selectedTutor$.next(tutor);
-
         this._tutorPets$.next(tutor.pets ?? []);
-
         this._loading$.next(false);
       },
       error: () => {
@@ -97,10 +102,7 @@ export class TutorFacade {
   linkPet(tutorId: number, petId: number): Observable<void> {
     this._loading$.next(true);
     return this.tutorService.linkPet(tutorId, petId).pipe(
-      tap(() => {
-        this.loadTutorById(tutorId);
-        this._loading$.next(false);
-      }),
+      tap(() => this._loading$.next(false)),
       catchError((error) => {
         this._loading$.next(false);
         return throwError(() => error);
@@ -111,10 +113,7 @@ export class TutorFacade {
   unlinkPet(tutorId: number, petId: number): Observable<void> {
     this._loading$.next(true);
     return this.tutorService.unlinkPet(tutorId, petId).pipe(
-      tap(() => {
-        this.loadTutorById(tutorId);
-        this._loading$.next(false);
-      }),
+      tap(() => this._loading$.next(false)),
       catchError((error) => {
         this._loading$.next(false);
         return throwError(() => error);
@@ -133,5 +132,31 @@ export class TutorFacade {
 
   get totalPages(): number {
     return this._totalPages$.value;
+  }
+
+  get searchTerm(): string {
+    return this._searchTerm$.value;
+  }
+
+  deleteTutor(id: number): void {
+    this._loading$.next(true);
+
+    this.tutorService.deleteTutor(id).subscribe({
+      next: () => {
+        this._totalElements$.next(0);
+
+        this.loadTutores(this._currentPage$.value, this._searchTerm$.value);
+      },
+      error: (err) => {
+        this._loading$.next(false);
+        console.error('Erro ao deletar tutor', err);
+
+        if (err.status === 409 || err.status === 400) {
+          alert('Não é possível excluir um tutor que possui pets vinculados.');
+        } else {
+          alert('Erro ao excluir tutor.');
+        }
+      }
+    });
   }
 }
