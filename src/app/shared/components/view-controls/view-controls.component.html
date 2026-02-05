@@ -1,0 +1,73 @@
+<div class="bg-white/60 backdrop-blur-xl rounded-xl shadow-sm border border-white/20 p-4">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+
+    <div class="flex items-center gap-2">
+      <span class="text-sm font-medium text-slate-600 mr-2">Visualização:</span>
+      <div class="flex gap-1 bg-slate-100 rounded-lg p-1">
+
+        <button
+          (click)="onViewModeChange('grid')"
+          [class.bg-white]="viewMode === 'grid'"
+          [class.text-blue-600]="viewMode === 'grid'"
+          [class.shadow-sm]="viewMode === 'grid'"
+          class="px-3 py-2 rounded-md text-slate-600 hover:text-blue-600 transition-all flex items-center gap-2"
+          title="Grade"
+          type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+          <span class="hidden sm:inline text-sm font-medium">Grade</span>
+        </button>
+
+        <button
+          (click)="onViewModeChange('list')"
+          [class.bg-white]="viewMode === 'list'"
+          [class.text-blue-600]="viewMode === 'list'"
+          [class.shadow-sm]="viewMode === 'list'"
+          class="px-3 py-2 rounded-md text-slate-600 hover:text-blue-600 transition-all flex items-center gap-2"
+          title="Lista"
+          type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <span class="hidden sm:inline text-sm font-medium">Lista</span>
+        </button>
+
+        <button
+          (click)="onViewModeChange('compact')"
+          [class.bg-white]="viewMode === 'compact'"
+          [class.text-blue-600]="viewMode === 'compact'"
+          [class.shadow-sm]="viewMode === 'compact'"
+          class="px-3 py-2 rounded-md text-slate-600 hover:text-blue-600 transition-all flex items-center gap-2"
+          title="Compacto"
+          type="button">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+          </svg>
+          <span class="hidden sm:inline text-sm font-medium">Compacto</span>
+        </button>
+      </div>
+    </div>
+
+    @if (viewMode === 'grid') {
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-medium text-slate-600">Exibir:</span>
+        <div class="flex gap-1 bg-slate-100 rounded-lg p-1">
+          @for (count of cardsPerRowOptions; track count) {
+            <button
+              (click)="onCardsPerRowChange(count)"
+              [class.bg-white]="cardsPerRow === count"
+              [class.text-blue-600]="cardsPerRow === count"
+              [class.shadow-sm]="cardsPerRow === count"
+              class="px-3 py-2 rounded-md text-slate-600 hover:text-blue-600 transition-all text-sm font-medium min-w-[40px]"
+              type="button">
+              {{ count }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
