@@ -37,9 +37,11 @@ export class Login {
         },
         error: (err) => {
           this.loadingSubject.next(false);
-          this.errorSubject.next(
-            err.error?.message || 'Invalid credentials. Please try again.'
-          );
+          const message = err.status === 401
+            ? 'Usuário ou senha incorretos.'
+            : 'Falha na conexão. Tente novamente mais tarde.';
+
+          this.errorSubject.next(err.error?.message || message);
         }
       });
     } else {
