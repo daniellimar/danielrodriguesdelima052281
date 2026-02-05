@@ -1,0 +1,107 @@
+<div
+  (click)="onViewDetails()"
+  class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-500 border border-slate-200/60 flex flex-col h-full cursor-pointer overflow-hidden"
+  role="article"
+  [attr.aria-label]="'Card do tutor ' + tutor.nome"
+>
+  <!-- Header do Card com Avatar -->
+  <div class="p-6 flex items-center gap-4 bg-gradient-to-br from-slate-50 to-white border-b border-slate-100">
+    <div
+      class="w-16 h-16 rounded-full bg-gradient-to-tr from-blue-100 to-blue-50 flex items-center justify-center text-blue-600 text-2xl font-black border-2 border-white shadow-sm overflow-hidden shrink-0">
+      @if (tutor.foto?.url) {
+        <img [src]="tutor.foto?.url" [alt]="tutor.nome"
+             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy">
+      } @else {
+        <span aria-hidden="true">{{ (tutor.nome || '').charAt(0).toUpperCase() }}</span>
+      }
+    </div>
+
+    <div class="flex-1 min-w-0">
+      <h3 class="text-xl font-extrabold text-slate-800 truncate group-hover:text-blue-600 transition-colors"
+          [title]="tutor.nome">
+        {{ tutor.nome }}
+      </h3>
+      <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tutor</span>
+    </div>
+  </div>
+
+  <!-- Corpo do Card -->
+  <div class="p-6 flex flex-col flex-1 bg-gradient-to-b from-white to-slate-50/30">
+    <div class="space-y-4 mb-8">
+      <!-- Email -->
+      <div class="flex items-center gap-3 text-sm text-slate-600 group/item">
+        <div
+          class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover/item:bg-blue-50 group-hover/item:text-blue-500 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <span class="truncate font-medium" [title]="tutor.email">{{ tutor.email }}</span>
+      </div>
+
+      <!-- Telefone -->
+      <div class="flex items-center gap-3 text-sm text-slate-600 group/item">
+        <div
+          class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover/item:bg-green-50 group-hover/item:text-green-500 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+          </svg>
+        </div>
+        <span class="font-medium">{{ tutor.telefone || 'Não informado' }}</span>
+      </div>
+
+      <!-- Endereço -->
+      <div class="flex items-center gap-3 text-sm text-slate-600 group/item">
+        <div
+          class="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 group-hover/item:bg-red-50 group-hover/item:text-red-500 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+        <span class="truncate font-medium">{{ tutor.endereco || 'Sem endereço' }}</span>
+      </div>
+    </div>
+
+    <!-- Ações -->
+    <div class="mt-auto flex gap-2">
+      <button
+        (click)="onViewDetails()"
+        class="flex-1 bg-slate-900 hover:bg-blue-600 text-white text-xs font-bold py-2.5 rounded-xl transition-all duration-300 active:scale-95 shadow-sm"
+      >
+        Detalhes
+      </button>
+
+      <button
+        (click)="onEdit($event)"
+        class="p-3 flex items-center justify-center bg-slate-100 hover:bg-blue-100 text-slate-500 hover:text-blue-600 rounded-xl transition-all active:scale-95 border border-transparent hover:border-blue-200"
+        title="Editar Tutor"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+        </svg>
+      </button>
+
+      <button
+        (click)="onDelete($event)"
+        [disabled]="isDeleting"
+        class="p-3 flex items-center justify-center bg-slate-100 hover:bg-red-100 text-slate-500 hover:text-red-600 rounded-xl transition-all active:scale-95 border border-transparent hover:border-red-200 disabled:opacity-50"
+        title="Excluir Tutor"
+      >
+        @if (isDeleting) {
+          <span
+            class="animate-spin inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full"></span>
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+        }
+      </button>
+    </div>
+  </div>
+</div>
