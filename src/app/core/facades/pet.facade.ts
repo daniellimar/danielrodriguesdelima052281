@@ -120,4 +120,26 @@ export class PetFacade {
   get searchTerm(): string {
     return this._searchTerm$.value;
   }
+
+  deletePet(id: number): void {
+    this._loading$.next(true);
+    this.petService.deletePet(id).subscribe({
+      next: () => {
+        this.loadPets(this._currentPage$.value, this._searchTerm$.value);
+      },
+      error: (err) => {
+        this._loading$.next(false);
+        this._error$.next(true);
+        console.error('Erro ao deletar pet', err);
+
+        if (err.status === 404) {
+          alert('Pet não encontrado. Pode ter sido excluído anteriormente.');
+        } else if (err.status === 409 || err.status === 400) {
+          alert('Não é possível excluir este pet. Verifique se há vínculos ativos.');
+        } else {
+          alert('Erro ao excluir pet. Tente novamente.');
+        }
+      }
+    });
+  }
 }
