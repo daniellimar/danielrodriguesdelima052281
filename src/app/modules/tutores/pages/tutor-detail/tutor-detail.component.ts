@@ -1,10 +1,11 @@
-import {Component, OnInit, Input, inject, numberAttribute, OnDestroy} from '@angular/core';
+import {Component, OnInit, Input, inject, numberAttribute} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {AsyncPipe} from '@angular/common';
 import {map} from 'rxjs/operators';
 
 import {TutorFacade} from '../../../../core/facades/tutor.facade';
 import {LinkPetModalComponent} from '../../../../shared/components/link-pet-modal/link-pet-modal.component';
+import {forkJoin} from 'rxjs';
 
 @Component({
   selector: 'app-tutor-detail',
@@ -17,7 +18,7 @@ import {LinkPetModalComponent} from '../../../../shared/components/link-pet-moda
   templateUrl: './tutor-detail.component.html',
   styleUrl: './tutor-detail.component.scss'
 })
-export class TutorDetailComponent implements OnInit, OnDestroy {
+export class TutorDetailComponent implements OnInit {
   @Input({transform: numberAttribute}) id!: number;
 
   private readonly tutorFacade = inject(TutorFacade);
@@ -25,10 +26,12 @@ export class TutorDetailComponent implements OnInit, OnDestroy {
   tutor$ = this.tutorFacade.selectedTutor$;
   loading$ = this.tutorFacade.loading$;
 
+  // pets do tutor → sempre array
   pets$ = this.tutor$.pipe(
     map(tutor => tutor?.pets ?? [])
   );
 
+  // apenas IDs dos pets vinculados → sempre array
   linkedPetIds$ = this.tutor$.pipe(
     map(tutor => tutor?.pets?.map(p => p.id) ?? [])
   );
@@ -41,10 +44,6 @@ export class TutorDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy(): void {
-    this.tutorFacade.clearSelectedTutor();
-  }
-
   onOpenLinkPetModal(): void {
     this.showLinkPetModal = true;
   }
@@ -54,19 +53,16 @@ export class TutorDetailComponent implements OnInit, OnDestroy {
   }
 
   onLinkPets(events: number[]): void {
-    const added = events.filter(x => x > 0);
-    const removed = events.filter(x => x < 0).map(x => Math.abs(x));
+    const added = events.filter(x => x > 0).map(id => this.tutorFacade.linkPet(this.id, id));
+    const removed = events.filter(x => x < 0).map(id => this.tutorFacade.unlinkPet(this.id, Math.abs(id)));
 
-    added.forEach(id => {
-      this.tutorFacade.linkPet(this.id, id).subscribe(() => {
-        this.tutorFacade.loadTutorById(this.id);
-      });
-    });
+    const operations = [...added, ...removed];
 
-    removed.forEach(id => {
-      this.tutorFacade.unlinkPet(this.id, id).subscribe(() => {
-        this.tutorFacade.loadTutorById(this.id);
-      });
+    if (operations.length === 0) return;
+
+    forkJoin(operations).subscribe({
+      next: () => this.tutorFacade.loadTutorById(this.id),
+      error: err => console.error(err)
     });
   }
 
