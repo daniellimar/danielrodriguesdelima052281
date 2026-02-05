@@ -6,6 +6,7 @@ import {SearchBarComponent} from '../../../../shared/components/search-bar/searc
 import {PaginationComponent} from '../../../../shared/components/pagination/pagination.component';
 import {Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged} from 'rxjs/operators';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-tutor-list',
@@ -32,7 +33,8 @@ export class TutorListComponent implements OnInit {
 
     this.searchSubject.pipe(
       debounceTime(400),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      takeUntilDestroyed()
     ).subscribe(term => {
       this.tutorFacade.loadTutores(0, term);
     });

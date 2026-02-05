@@ -1,24 +1,37 @@
-import {Component, OnInit, Input, inject, numberAttribute} from '@angular/core';
+import {Component, OnInit, Input, inject, numberAttribute, OnDestroy} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {AsyncPipe, DatePipe} from '@angular/common';
+import {AsyncPipe} from '@angular/common';
+import {map} from 'rxjs/operators';
+
 import {TutorFacade} from '../../../../core/facades/tutor.facade';
 import {LinkPetModalComponent} from '../../../../shared/components/link-pet-modal/link-pet-modal.component';
 
 @Component({
   selector: 'app-tutor-detail',
   standalone: true,
-  imports: [AsyncPipe, RouterLink, LinkPetModalComponent],
+  imports: [
+    AsyncPipe,
+    RouterLink,
+    LinkPetModalComponent
+  ],
   templateUrl: './tutor-detail.component.html',
   styleUrl: './tutor-detail.component.scss'
 })
-export class TutorDetailComponent implements OnInit {
+export class TutorDetailComponent implements OnInit, OnDestroy {
   @Input({transform: numberAttribute}) id!: number;
 
-  private tutorFacade = inject(TutorFacade);
+  private readonly tutorFacade = inject(TutorFacade);
 
   tutor$ = this.tutorFacade.selectedTutor$;
-  pets$ = this.tutorFacade.tutorPets$;
   loading$ = this.tutorFacade.loading$;
+
+  pets$ = this.tutor$.pipe(
+    map(tutor => tutor?.pets ?? [])
+  );
+
+  linkedPetIds$ = this.tutor$.pipe(
+    map(tutor => tutor?.pets?.map(p => p.id) ?? [])
+  );
 
   showLinkPetModal = false;
 
@@ -26,6 +39,10 @@ export class TutorDetailComponent implements OnInit {
     if (this.id) {
       this.tutorFacade.loadTutorById(this.id);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.tutorFacade.clearSelectedTutor();
   }
 
   onOpenLinkPetModal(): void {
@@ -36,25 +53,29 @@ export class TutorDetailComponent implements OnInit {
     this.showLinkPetModal = false;
   }
 
-  onLinkPet(petId: number): void {
-    this.tutorFacade.linkPet(this.id, petId).subscribe({
-      next: () => {
-        alert('Pet vinculado com sucesso!');
-        this.showLinkPetModal = false;
-      },
-      error: (err) => {
-        console.error('Erro ao vincular pet:', err);
-        alert('Erro ao vincular pet. Verifique se o pet já não está vinculado.');
-      }
+  onLinkPets(events: number[]): void {
+    const added = events.filter(x => x > 0);
+    const removed = events.filter(x => x < 0).map(x => Math.abs(x));
+
+    added.forEach(id => {
+      this.tutorFacade.linkPet(this.id, id).subscribe(() => {
+        this.tutorFacade.loadTutorById(this.id);
+      });
+    });
+
+    removed.forEach(id => {
+      this.tutorFacade.unlinkPet(this.id, id).subscribe(() => {
+        this.tutorFacade.loadTutorById(this.id);
+      });
     });
   }
 
   onUnlinkPet(petId: number): void {
-    if (confirm('Deseja realmente remover o vínculo deste pet com o tutor?')) {
-      this.tutorFacade.unlinkPet(this.id, petId).subscribe({
-        next: () => alert('Vínculo removido com sucesso!'),
-        error: () => alert('Erro ao remover vínculo.')
-      });
-    }
+    if (!confirm('Deseja realmente remover o vínculo deste pet?')) return;
+
+    this.tutorFacade.unlinkPet(this.id, petId).subscribe({
+      next: () => this.tutorFacade.loadTutorById(this.id),
+      error: err => console.error(err)
+    });
   }
 }

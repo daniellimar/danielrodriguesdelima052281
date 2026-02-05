@@ -1,15 +1,19 @@
 import {Component, OnInit, Input, inject, numberAttribute} from '@angular/core';
 import {FormBuilder, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
-import {AsyncPipe} from '@angular/common';
+import {Router} from '@angular/router';
 import {TutorFacade} from '../../../../core/facades/tutor.facade';
 import {CreateTutorDto} from '../../../../core/models/tutor.model';
 import {switchMap, of} from 'rxjs';
+import {FormActionsComponent} from '../../../../shared/components/form-actions/form-actions.component';
+import {ImageUploadComponent} from '../../../../shared/components/image-upload/image-upload.component';
+import {FormHeaderComponent} from '../../../../shared/components/form-header/form-header.component';
+import {CpfMaskDirective} from '../../../../shared/directives/cpf-mask.component';
+import {PhoneMaskDirective} from '../../../../shared/directives/phone-mask.component';
 
 @Component({
   selector: 'app-tutor-form',
   standalone: true,
-  imports: [ReactiveFormsModule, AsyncPipe, RouterLink],
+  imports: [ReactiveFormsModule, FormActionsComponent, ImageUploadComponent, FormHeaderComponent, CpfMaskDirective, PhoneMaskDirective],
   templateUrl: './tutor-form.component.html',
   styleUrl: './tutor-form.component.scss'
 })
@@ -61,17 +65,14 @@ export class TutorFormComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.selectedFile = input.files[0];
+  handleFileSelected(file: File): void {
+    this.selectedFile = file;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.previewUrl = e.target?.result as string;
-      };
-      reader.readAsDataURL(this.selectedFile);
+    if (this.previewUrl) {
+      URL.revokeObjectURL(this.previewUrl);
     }
+
+    this.previewUrl = URL.createObjectURL(file);
   }
 
   onSubmit(): void {

@@ -113,7 +113,8 @@
 <!-- Modal de Vinculação -->
 @if (showLinkPetModal) {
   <app-link-pet-modal
-    (close)="onCloseLinkPetModal()"
-    (selectPet)="onLinkPet($event)">
+    [linkedPetIds]="(linkedPetIds$ | async) ?? []"
+    (linkPets)="onLinkPets($event)"
+    (close)="onCloseLinkPetModal()">
   </app-link-pet-modal>
 }
