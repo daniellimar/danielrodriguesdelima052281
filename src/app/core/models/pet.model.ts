@@ -11,6 +11,7 @@ export interface Pet {
   id: number;
   nome: string;
   raca: string;
+  especie?: string;
   idade: number;
   tutorId?: number;
   foto?: Foto;

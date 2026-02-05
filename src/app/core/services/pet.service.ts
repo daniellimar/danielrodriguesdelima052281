@@ -7,6 +7,7 @@ import {Pet, PetListResponse} from '../models/pet.model';
 export interface CreatePetDto {
   nome: string;
   raca: string;
+  especie?: string;
   idade: number;
 }
 
