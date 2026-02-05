@@ -1,117 +1,92 @@
-<div class="p-6 max-w-7xl mx-auto">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50/30 to-slate-50 py-8 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
 
-  <!-- Header -->
-  <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-    <div class="flex flex-col">
-      <h1 class="text-3xl font-bold text-gray-800">Registro de Tutores</h1>
-      <button routerLink="/pets" class="text-sm text-blue-600 hover:underline text-left">
-        ← Voltar para Pets
-      </button>
-    </div>
+    <app-page-header
+      title="Tutores"
+      subtitle="Responsáveis pelos pets"
+      iconBgClass="from-purple-500 to-blue-600"
+      actionLabel="Novo Tutor"
+      actionRoute="/tutores/novo"
+      [showSearch]="true"
+      searchPlaceholder="Buscar tutor por nome..."
+      [searchValue]="searchTerm"
+      (searchChange)="onSearch($event)">
 
-    <div class="flex gap-4 items-center w-full md:w-auto">
-      <app-search-bar
-        placeholder="Pesquisar por nome..."
-        [value]="searchTerm"
-        (search)="onSearch($event)"
-        class="flex-1 md:flex-initial">
-      </app-search-bar>
+      <svg icon xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+           viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2a3 3 0 00-5.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2a3 3 0 015.356-1.857M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+    </app-page-header>
 
-      <button
-        routerLink="/tutores/novo"
-        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg
-             font-semibold transition-colors whitespace-nowrap">
-        + Novo Tutor
-      </button>
-    </div>
-  </header>
+    <!-- Controles de Visualização -->
+    <app-view-controls
+      [viewMode]="viewMode"
+      [cardsPerRow]="cardsPerRow"
+      (viewModeChange)="setViewMode($event)"
+      (cardsPerRowChange)="setCardsPerRow($event)"
+      class="block mb-6">
+    </app-view-controls>
 
-  <!-- Loading -->
-  @if (loading$ | async) {
-    <div class="flex justify-center my-12">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
-    </div>
-  } @else {
-
-    <!-- Tutores Grid -->
-    @if (tutores$ | async; as tutores) {
-      @if (tutores.length > 0) {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          @for (tutor of tutores; track tutor.id) {
-            <div
-              class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
-
-              <!-- Foto do Tutor -->
-              <div class="aspect-square bg-gradient-to-br from-green-50 to-green-100 relative">
-                @if (tutor.foto?.url) {
-                  <img
-                    [src]="tutor.foto?.url"
-                    [alt]="tutor.nome"
-                    class="w-full h-full object-cover"
-                  />
-                } @else {
-                  <div class="w-full h-full flex items-center justify-center text-green-300 text-6xl">
-                    <span aria-hidden="true">👤</span>
-                  </div>
-                }
-              </div>
-
-              <!-- Informações -->
-              <div class="p-4">
-                <h3 class="text-xl font-bold text-gray-800 mb-2 truncate">
-                  {{ tutor.nome }}
-                </h3>
-
-                <div class="space-y-1 text-sm text-gray-600 mb-4">
-                  <p class="flex items-center gap-2">
-                    <span aria-hidden="true">📧</span>
-                    <span class="truncate">{{ tutor.email }}</span>
-                  </p>
-                  <p class="flex items-center gap-2">
-                    <span>📱</span>
-                    <span>{{ tutor.telefone }}</span>
-                  </p>
-                  <p class="flex items-center gap-2">
-                    <span>📍</span>
-                    <span class="truncate">{{ tutor.endereco }}</span>
-                  </p>
-                </div>
-
-                <!-- Botões de Ação -->
-                <div class="flex gap-2 w-full">
-                  <button
-                    (click)="onViewTutorDetails(tutor.id)"
-                    class="w-[90%] bg-gray-50 hover:bg-green-50
-                           text-green-600 font-semibold py-2 rounded-lg
-                           border border-green-100 transition-colors">
-                    Ver detalhes
-                  </button>
-
-                  <button
-                    (click)="onEditTutor(tutor.id)"
-                    title="Editar Tutor"
-                    class="w-[10%] flex items-center justify-center bg-gray-50 hover:bg-gray-100
-                           text-gray-600 py-2 rounded-lg border border-gray-200 transition-colors">
-                    ✏️
-                  </button>
-                </div>
-              </div>
-            </div>
-          }
+    <!-- Loading State -->
+    @if (loading$ | async) {
+      <div class="flex flex-col justify-center items-center py-20">
+        <div class="relative">
+          <div class="animate-spin rounded-full h-16 w-16 border-4 border-purple-200"></div>
+          <div
+            class="animate-spin rounded-full h-16 w-16 border-4 border-purple-600 border-t-transparent absolute top-0 left-0"></div>
         </div>
-      } @else {
-        <div class="text-center py-12">
-          <p class="text-gray-500 text-lg">Nenhum tutor encontrado.</p>
-        </div>
-      }
+        <p class="text-slate-500 mt-4 font-medium">Carregando tutores...</p>
+      </div>
     }
-  }
 
-  <!-- Pagination -->
-  <app-pagination
-    [currentPage]="(currentPage$ | async) ?? 0"
-    [totalPages]="(totalPages$ | async) ?? 1"
-    [totalElements]="(totalElements$ | async) ?? 0"
-    (pageChange)="onPageChange($event)">
-  </app-pagination>
+    <!-- Grid de Cards com Classes Dinâmicas -->
+    @if (!(loading$ | async)) {
+      <div [class]="getGridClasses() + ' mb-8 transition-all duration-300'">
+        @for (tutor of tutores$ | async; track tutor.id) {
+          <app-tutor-card
+            [tutor]="tutor"
+            [isDeleting]="deletingTutorId === tutor.id"
+            (viewDetails)="onViewDetails($event)"
+            (edit)="onEdit($event)"
+            (delete)="onDelete($event)"
+          />
+        }
+      </div>
+    }
+
+    <!-- Empty State Modernizado -->
+    @if ((tutores$ | async)?.length === 0 && !(loading$ | async)) {
+      <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-12 text-center">
+        <div class="w-24 h-24 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24"
+               stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-black text-slate-800 mb-2">Nenhum tutor encontrado</h2>
+        <p class="text-slate-500 mb-8">Comece cadastrando o primeiro tutor do sistema</p>
+        <button
+          routerLink="/tutores/novo"
+          class="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-purple-500/30 transition-all active:scale-95">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Cadastrar Primeiro Tutor
+        </button>
+      </div>
+    }
+
+    <!-- Paginação -->
+    @if ((tutores$ | async)?.length ?? 0 > 0) {
+      <app-pagination
+        [currentPage]="(currentPage$ | async) ?? 0"
+        [totalPages]="(totalPages$ | async) ?? 1"
+        [totalElements]="(totalElements$ | async) ?? 0"
+        [itemsPerPage]="10"
+        (pageChange)="onPageChange($event)"
+      />
+    }
+  </div>
 </div>
