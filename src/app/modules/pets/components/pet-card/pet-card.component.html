@@ -8,9 +8,9 @@
       [src]="pet.foto?.url || defaultPetImage.url"
       [alt]="'Foto do pet ' + pet.nome"
       class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-      loading="lazy"
+      loading="eager"
     />
-    <!-- Badge de Espécie (Se houver no modelo futuro) -->
+
     @if (pet.especie) {
       <span
         class="absolute top-2 right-2 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full uppercase tracking-wider">
