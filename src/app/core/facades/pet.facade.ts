@@ -19,6 +19,9 @@ export class PetFacade {
   private readonly _loading$ = new BehaviorSubject<boolean>(false);
   readonly loading$ = this._loading$.asObservable();
 
+  private readonly _error$ = new BehaviorSubject<boolean>(false);
+  readonly error$ = this._error$.asObservable();
+
   private readonly _totalElements$ = new BehaviorSubject<number>(0);
   readonly totalElements$ = this._totalElements$.asObservable();
 
@@ -28,21 +31,31 @@ export class PetFacade {
   private readonly _currentPage$ = new BehaviorSubject<number>(0);
   readonly currentPage$ = this._currentPage$.asObservable();
 
-  loadPets(page = 0, nome = ''): void {
+  private readonly _searchTerm$ = new BehaviorSubject<string>('');
+  readonly searchTerm$ = this._searchTerm$.asObservable();
+
+  loadPets(page = 0, nome = '', append = false): void {
     this._loading$.next(true);
+    this._error$.next(false);
     this._currentPage$.next(page);
+    this._searchTerm$.next(nome);
 
     this.petService.list(page, 10, nome)
       .pipe(finalize(() => this._loading$.next(false)))
       .subscribe({
         next: (response: PetListResponse) => {
-          this._pets$.next(response.content);
+          if (append && page > 0) {
+            const currentPets = this._pets$.value;
+            this._pets$.next([...currentPets, ...response.content]);
+          } else {
+            this._pets$.next(response.content);
+          }
+
           this._totalElements$.next(response.total);
           this._totalPages$.next(response.pageCount);
-          this._loading$.next(false);
         },
         error: () => {
-          this._loading$.next(false);
+          this._error$.next(true);
         }
       });
   }
@@ -102,5 +115,9 @@ export class PetFacade {
 
   get totalPages(): number {
     return this._totalPages$.value;
+  }
+
+  get searchTerm(): string {
+    return this._searchTerm$.value;
   }
 }
