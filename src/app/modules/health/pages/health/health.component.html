@@ -1,114 +1,112 @@
-<div class="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-md mt-10">
-  <h1 class="text-2xl font-bold mb-6 text-gray-800">System Health Monitor</h1>
-
-  @if (loading$ | async) {
-    <p class="text-gray-500">Verificando integridade do sistema...</p>
-  }
+<div class="p-6 max-w-4xl mx-auto bg-white rounded-xl shadow-md mt-10 border border-gray-100">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">System Health Monitor</h1>
+    <!-- Badge de Status Geral -->
+    @if (health$ | async; as health) {
+      <span [class]="health.readiness === 'UP' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'"
+            class="px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+        {{ health.readiness === 'UP' ? 'SISTEMA OPERACIONAL' : 'SISTEMA INSTÁVEL' }}
+      </span>
+    }
+  </div>
 
   @if (health$ | async; as health) {
-    <!-- Status Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
       <!-- Liveness -->
-      <div class="p-4 rounded-lg border"
-           [class.bg-green-50]="health.liveness === 'UP'"
-           [class.border-green-200]="health.liveness === 'UP'"
-           [class.bg-red-50]="health.liveness === 'DOWN'"
-           [class.border-red-200]="health.liveness === 'DOWN'"
-      >
-        <span class="text-sm font-semibold uppercase tracking-wider text-gray-600">Liveness</span>
-        <p class="text-2xl font-bold mt-1"
-           [class.text-green-700]="health.liveness === 'UP'"
-           [class.text-red-700]="health.liveness === 'DOWN'"
-        >
+      <div class="p-4 rounded-lg border transition-all duration-300"
+           [class]="health.liveness === 'UP' ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'">
+        <div class="flex justify-between items-start">
+          <span class="text-sm font-semibold uppercase text-gray-600">Liveness</span>
+          <span [class]="health.liveness === 'UP' ? 'text-green-600' : 'text-red-600'">
+             @if (health.liveness === 'UP') {
+               ✅
+             } @else {
+               ❌
+             }
+          </span>
+        </div>
+        <p class="text-2xl font-bold mt-1" [class]="health.liveness === 'UP' ? 'text-green-700' : 'text-red-700'">
           {{ health.liveness }}
         </p>
-        <p class="text-xs text-gray-500 mt-2">Processo do servidor ativo</p>
+        <p class="text-xs text-gray-500 mt-2">Processo do servidor ativo e respondendo.</p>
       </div>
 
       <!-- Readiness -->
-      <div class="p-4 rounded-lg border"
-           [class.bg-blue-50]="health.readiness === 'UP'"
-           [class.border-blue-200]="health.readiness === 'UP'"
-           [class.bg-red-50]="health.readiness === 'DOWN'"
-           [class.border-red-200]="health.readiness === 'DOWN'"
-      >
-        <span class="text-sm font-semibold uppercase tracking-wider text-gray-600">Readiness</span>
-        <p class="text-2xl font-bold mt-1"
-           [class.text-blue-700]="health.readiness === 'UP'"
-           [class.text-red-700]="health.readiness === 'DOWN'"
-        >
+      <div class="p-4 rounded-lg border transition-all duration-300"
+           [class]="health.readiness === 'UP' ? 'bg-blue-50 border-blue-200' : 'bg-red-50 border-red-200'">
+        <div class="flex justify-between items-start">
+          <span class="text-sm font-semibold uppercase text-gray-600">Readiness</span>
+          <span [class]="health.readiness === 'UP' ? 'text-blue-600' : 'text-red-600'">
+            @if (health.readiness === 'UP') {
+              🌐
+            } @else {
+              ⚠️
+            }
+          </span>
+        </div>
+        <p class="text-2xl font-bold mt-1" [class]="health.readiness === 'UP' ? 'text-blue-700' : 'text-red-700'">
           {{ health.readiness }}
         </p>
-        <p class="text-xs text-gray-500 mt-2">Pronto para receber tráfego</p>
+        <p class="text-xs text-gray-500 mt-2">Capacidade de processar requisições de dados.</p>
       </div>
     </div>
 
-    <!-- Endpoint Testado -->
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-      <p class="text-xs font-semibold text-gray-600 mb-2">ENDPOINT TESTADO</p>
-      <code class="text-sm text-blue-600 break-all">{{ health.endpoint }}</code>
-      <p class="text-xs text-gray-500 mt-2">
-        Última verificação: {{ health.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}
-      </p>
-    </div>
-
-    <!-- Detalhes Técnicos -->
-    @if (health.details) {
-      <div class="bg-gray-900 rounded-lg p-4 mb-6">
-        <p class="text-blue-400 text-xs font-mono mb-2">// Response Details</p>
-        <pre class="text-green-400 text-xs overflow-auto">{{ health.details | json }}</pre>
+    <!-- Detalhes Técnicos com Toggle (Opcional para Sênior) -->
+    <details class="group bg-gray-50 border border-gray-200 rounded-lg mb-6">
+      <summary class="list-none p-4 cursor-pointer flex justify-between items-center">
+        <span class="text-xs font-semibold text-gray-600 uppercase">Ver Detalhes Técnicos</span>
+        <span class="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+      </summary>
+      <div class="p-4 pt-0">
+        <div class="bg-gray-900 rounded-lg p-4">
+          <code class="text-blue-400 text-xs block mb-2">Endpoint: {{ health.endpoint }}</code>
+          <pre class="text-green-400 text-xs overflow-auto">{{ health.details | json }}</pre>
+        </div>
       </div>
-    }
+    </details>
   }
 
-  <!-- Botão de Refresh -->
+  <!-- Botão de Refresh Otimizado -->
   <button
     (click)="reload()"
     [disabled]="loading$ | async"
-    class="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-700 disabled:opacity-50 transition-colors font-medium"
+    class="w-full bg-gray-800 text-white py-3 rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium flex items-center justify-center gap-2"
   >
     @if (loading$ | async) {
-      Verificando...
+      <span class="animate-spin">🔄</span> Verificando...
     } @else {
-      Refresh Status
+      <span>🔄</span> Atualizar Status
     }
   </button>
 
-  <!-- Histórico de Logs -->
+  <!-- Histórico com Empty State -->
   @if (history$ | async; as history) {
-    @if (history.length > 0) {
-      <div class="mt-8">
-        <h2 class="text-lg font-bold text-gray-800 mb-4">📋 Histórico de Verificações</h2>
-        <div class="space-y-2">
+    <div class="mt-8">
+      <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        📋 Histórico <span class="text-xs font-normal text-gray-400">(Últimas 10)</span>
+      </h2>
+
+      @if (history.length === 0) {
+        <p class="text-center py-4 text-gray-400 italic border-2 border-dashed rounded-lg">Nenhum registro
+          encontrado.</p>
+      } @else {
+        <div class="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
           @for (log of history; track log.timestamp) {
-            <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm">
-              <div class="flex items-center justify-between">
-                <span class="font-mono text-xs text-gray-500">
-                  {{ log.timestamp | date:'dd/MM/yyyy HH:mm:ss' }}
-                </span>
-                <div class="flex gap-2">
-                  <span class="px-2 py-1 rounded text-xs font-semibold"
-                        [class.bg-green-100]="log.liveness === 'UP'"
-                        [class.text-green-700]="log.liveness === 'UP'"
-                        [class.bg-red-100]="log.liveness === 'DOWN'"
-                        [class.text-red-700]="log.liveness === 'DOWN'"
-                  >
-                    L: {{ log.liveness }}
-                  </span>
-                  <span class="px-2 py-1 rounded text-xs font-semibold"
-                        [class.bg-blue-100]="log.readiness === 'UP'"
-                        [class.text-blue-700]="log.readiness === 'UP'"
-                        [class.bg-red-100]="log.readiness === 'DOWN'"
-                        [class.text-red-700]="log.readiness === 'DOWN'"
-                  >
-                    R: {{ log.readiness }}
-                  </span>
-                </div>
+            <div
+              class="bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm flex items-center justify-between hover:bg-gray-100 transition-colors">
+              <span class="font-mono text-xs text-gray-500">
+                {{ log.timestamp | date:'HH:mm:ss' }} - {{ log.timestamp | date:'dd/MM' }}
+              </span>
+              <div class="flex gap-2">
+                <span [class]="log.liveness === 'UP' ? 'text-green-600' : 'text-red-600'"
+                      class="font-bold">L:{{ log.liveness }}</span>
+                <span [class]="log.readiness === 'UP' ? 'text-blue-600' : 'text-red-600'"
+                      class="font-bold">R:{{ log.readiness }}</span>
               </div>
             </div>
           }
         </div>
-      </div>
-    }
+      }
+    </div>
   }
 </div>
