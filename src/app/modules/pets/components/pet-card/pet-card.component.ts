@@ -11,8 +11,11 @@ import {DEFAULT_PET_IMAGE} from '../../../../shared/constants/default-images';
 })
 export class PetCardComponent {
   @Input({required: true}) pet!: Pet;
+  @Input() isDeleting = false;
+
   @Output() edit = new EventEmitter<number>();
   @Output() viewDetails = new EventEmitter<number>();
+  @Output() delete = new EventEmitter<number>();
 
   readonly defaultPetImage = DEFAULT_PET_IMAGE;
 
@@ -23,5 +26,13 @@ export class PetCardComponent {
   onEdit(event: MouseEvent): void {
     event.stopPropagation();
     this.edit.emit(this.pet.id);
+  }
+
+  onDelete(event: MouseEvent): void {
+    event.stopPropagation();
+
+    if (confirm('Tem certeza que deseja excluir este pet? Esta ação não pode ser desfeita.')) {
+      this.delete.emit(this.pet.id);
+    }
   }
 }
