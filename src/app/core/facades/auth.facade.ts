@@ -14,7 +14,25 @@ export class AuthFacade {
   private tokenExpirationTimer?: ReturnType<typeof setTimeout>;
 
   constructor(private authService: AuthService, private router: Router) {
-    this.initializeTokenRefresh();
+  }
+
+  /**
+   * Método público para ser chamado no AppComponent.ngOnInit()
+   * Isso garante que o ciclo de injeção já terminou
+   */
+  initializeOnAppStart(): void {
+    if (!this.isAuthenticated) return;
+
+    this.refreshToken().subscribe({
+      next: () => {
+        console.log('Token renovado com sucesso na inicialização');
+      },
+      error: (err) => {
+        console.warn('Falha ao atualizar token na inicialização', err);
+        // NÃO chama logout aqui para evitar loop
+        // Deixe o guard ou interceptor de erro lidar com isso
+      }
+    });
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
@@ -97,17 +115,5 @@ export class AuthFacade {
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
     }
-  }
-
-  private initializeTokenRefresh(): void {
-    if (!this.isAuthenticated) return;
-
-    this.refreshToken().subscribe({
-      next: () => {
-      },
-      error: (err) => {
-        console.warn('Falha ao atualizar token na inicialização', err);
-      }
-    });
   }
 }
