@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, inject, numberAttribute} from '@angular/core';
+import {Component, OnInit, Input, inject, numberAttribute, DestroyRef} from '@angular/core';
 import {FormBuilder, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import {TutorFacade} from '../../../../core/facades/tutor.facade';
@@ -21,9 +21,10 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 export class TutorFormComponent implements OnInit {
   @Input({transform: numberAttribute}) id?: number;
 
-  private fb = inject(FormBuilder);
-  private tutorFacade = inject(TutorFacade);
   private router = inject(Router);
+  private fb = inject(FormBuilder);
+  private destroyRef = inject(DestroyRef);
+  private tutorFacade = inject(TutorFacade);
 
   loading$ = this.tutorFacade.loading$;
   isEditMode = false;
@@ -54,7 +55,7 @@ export class TutorFormComponent implements OnInit {
 
     this.tutorFacade.loadTutorById(this.id);
     this.tutorFacade.selectedTutor$
-      .pipe(takeUntilDestroyed())// Evita Memory Leak
+      .pipe(takeUntilDestroyed(this.destroyRef))// Evita Memory Leak
       .subscribe(tutor => {
         if (tutor) {
           this.tutorForm.patchValue({
