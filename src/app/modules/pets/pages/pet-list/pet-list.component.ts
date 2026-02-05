@@ -7,8 +7,9 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 import {PetFacade} from '../../../../core/facades/pet.facade';
 import {PetCardComponent} from '../../components/pet-card/pet-card.component';
-import {SearchBarComponent} from '../../../../shared/components/search-bar/search-bar.component';
 import {PaginationComponent} from '../../../../shared/components/pagination/pagination.component';
+import {ViewControlsComponent} from '../../../../shared/components/view-controls/view-controls.component';
+import {PageHeaderComponent} from '../../../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-pet-list',
@@ -16,9 +17,9 @@ import {PaginationComponent} from '../../../../shared/components/pagination/pagi
   imports: [
     AsyncPipe,
     PetCardComponent,
-    SearchBarComponent,
     PaginationComponent,
-    RouterLink
+    ViewControlsComponent,
+    PageHeaderComponent
   ],
   templateUrl: './pet-list.component.html'
 })
@@ -38,12 +39,19 @@ export class PetListComponent implements OnInit {
   readonly totalElements$ = this.petFacade.totalElements$;
 
   searchTerm = '';
+  deletingPetId: number | null = null;
 
   constructor() {
     this.initSearchDebounce();
   }
 
   ngOnInit(): void {
+    const savedViewMode = localStorage.getItem('petViewMode') as 'grid' | 'list' | 'compact';
+    const savedCardsPerRow = localStorage.getItem('petCardsPerRow');
+
+    if (savedViewMode) this.viewMode = savedViewMode;
+    if (savedCardsPerRow) this.cardsPerRow = parseInt(savedCardsPerRow) as 2 | 3 | 4 | 5;
+
     this.searchTerm = this.petFacade.searchTerm;
     this.petFacade.loadPets(this.petFacade.currentPage, this.searchTerm);
   }
@@ -80,5 +88,44 @@ export class PetListComponent implements OnInit {
 
   onEditPet(id: number): void {
     this.router.navigate(['/pets', id, 'editar']);
+  }
+
+  onDelete(id: number): void {
+    this.deletingPetId = id;
+    this.petFacade.deletePet(id);
+
+    setTimeout(() => {
+      this.deletingPetId = null;
+    }, 2000);
+  }
+
+  viewMode: 'grid' | 'list' | 'compact' = 'grid';
+  cardsPerRow: 2 | 3 | 4 | 5 = 4;
+
+  setViewMode(mode: 'grid' | 'list' | 'compact'): void {
+    this.viewMode = mode;
+    localStorage.setItem('petViewMode', mode);
+  }
+
+  setCardsPerRow(count: 2 | 3 | 4 | 5): void {
+    this.cardsPerRow = count;
+    localStorage.setItem('petCardsPerRow', count.toString());
+  }
+
+  getGridClasses(): string {
+    if (this.viewMode === 'list') {
+      return 'grid grid-cols-1 gap-3';
+    }
+    if (this.viewMode === 'compact') {
+      return 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-3';
+    }
+
+    const gridMap = {
+      2: 'grid grid-cols-1 sm:grid-cols-2 gap-6',
+      3: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5',
+      4: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5',
+      5: 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4'
+    };
+    return gridMap[this.cardsPerRow];
   }
 }
