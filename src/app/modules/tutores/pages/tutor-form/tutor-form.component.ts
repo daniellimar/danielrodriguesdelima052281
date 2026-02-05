@@ -9,6 +9,7 @@ import {ImageUploadComponent} from '../../../../shared/components/image-upload/i
 import {FormHeaderComponent} from '../../../../shared/components/form-header/form-header.component';
 import {CpfMaskDirective} from '../../../../shared/directives/cpf-mask.component';
 import {PhoneMaskDirective} from '../../../../shared/directives/phone-mask.component';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-tutor-form',
@@ -25,9 +26,10 @@ export class TutorFormComponent implements OnInit {
   private router = inject(Router);
 
   loading$ = this.tutorFacade.loading$;
+  isEditMode = false;
   selectedFile: File | null = null;
   previewUrl: string | null = null;
-  isEditMode = false;
+  errorMessage: string | null = null;
 
   tutorForm: FormGroup = this.fb.group({
     nome: ['', [Validators.required, Validators.minLength(3)]],
@@ -51,18 +53,20 @@ export class TutorFormComponent implements OnInit {
     if (!this.id) return;
 
     this.tutorFacade.loadTutorById(this.id);
-    this.tutorFacade.selectedTutor$.subscribe(tutor => {
-      if (tutor) {
-        this.tutorForm.patchValue({
-          nome: tutor.nome,
-          email: tutor.email,
-          telefone: tutor.telefone,
-          endereco: tutor.endereco,
-          cpf: tutor.cpf
-        });
-        this.previewUrl = tutor.foto?.url || null;
-      }
-    });
+    this.tutorFacade.selectedTutor$
+      .pipe(takeUntilDestroyed())// Evita Memory Leak
+      .subscribe(tutor => {
+        if (tutor) {
+          this.tutorForm.patchValue({
+            nome: tutor.nome,
+            email: tutor.email,
+            telefone: tutor.telefone,
+            endereco: tutor.endereco,
+            cpf: tutor.cpf
+          });
+          this.previewUrl = tutor.foto?.url || null;
+        }
+      });
   }
 
   handleFileSelected(file: File): void {
@@ -82,11 +86,8 @@ export class TutorFormComponent implements OnInit {
     }
 
     const tutorDto: CreateTutorDto = {
-      nome: this.tutorForm.value.nome,
-      email: this.tutorForm.value.email,
-      telefone: this.tutorForm.value.telefone,
-      endereco: this.tutorForm.value.endereco,
-      cpf: Number(this.tutorForm.value.cpf)
+      ...this.tutorForm.value,
+      cpf: String(this.tutorForm.value.cpf).replace(/\D/g, '')
     };
 
     const saveOperation = this.isEditMode && this.id
