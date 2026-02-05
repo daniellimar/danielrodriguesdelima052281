@@ -1,0 +1,57 @@
+<header class="bg-white/60 backdrop-blur-xl rounded-2xl shadow-sm border border-white/20 p-6 mb-8">
+  <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+
+    <!-- Título -->
+    <div class="flex items-center gap-4">
+      <div
+        class="p-3 rounded-xl shadow-lg text-white bg-gradient-to-br"
+        [ngClass]="iconBgClass">
+        <ng-content select="[icon]"></ng-content>
+      </div>
+
+      <div>
+        <h1 class="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
+          {{ title }}
+        </h1>
+        @if (subtitle) {
+          <p class="text-slate-500 text-sm mt-1">{{ subtitle }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- Ações -->
+    <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+
+      @if (showSearch) {
+        <div class="relative w-full sm:min-w-[280px]">
+          <svg xmlns="http://www.w3.org/2000/svg"
+               class="h-5 w-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+               fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input
+            type="text"
+            [value]="searchValue"
+            (input)="onSearchInput($event)"
+            [placeholder]="searchPlaceholder || 'Buscar...'"
+            class="w-full pl-12 pr-4 py-3 rounded-xl bg-white border border-slate-200
+                   focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none
+                   transition-all text-slate-700"/>
+        </div>
+      }
+
+      @if (actionLabel && actionRoute) {
+        <a
+          [routerLink]="actionRoute"
+          class="group bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800
+                 text-white px-6 py-3 rounded-xl font-semibold shadow-lg shadow-blue-500/30
+                 hover:shadow-xl transition-all active:scale-95
+                 flex items-center gap-2 justify-center whitespace-nowrap">
+          <span class="text-xl group-hover:rotate-90 transition-transform duration-300">+</span>
+          {{ actionLabel }}
+        </a>
+      }
+    </div>
+  </div>
+</header>
