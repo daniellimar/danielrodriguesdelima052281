@@ -6,7 +6,9 @@ export const authGuard = () => {
   const authFacade = inject(AuthFacade);
   const router = inject(Router);
 
-  if (authFacade.isAuthenticated) {
+  const hasToken = !!authFacade.currentAccessToken;
+
+  if (hasToken) {
     return true;
   }
 

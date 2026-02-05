@@ -100,10 +100,14 @@ export class AuthFacade {
   }
 
   private initializeTokenRefresh(): void {
-    if (this.isAuthenticated) {
-      this.refreshToken().subscribe({
-        error: () => this.logout()
-      });
-    }
+    if (!this.isAuthenticated) return;
+
+    this.refreshToken().subscribe({
+      next: () => {
+      },
+      error: (err) => {
+        console.warn('Falha ao atualizar token na inicialização', err);
+      }
+    });
   }
 }
