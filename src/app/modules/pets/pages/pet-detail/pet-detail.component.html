@@ -1,111 +1,131 @@
-<div class="max-w-4xl mx-auto p-6">
-  <!-- Botão Voltar -->
-  <button
-    routerLink="/pets"
-    class="flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors">
-    <span class="mr-2">←</span> Voltar para listagem
-  </button>
+<div class="max-w-4xl mx-auto p-6 animate-fadeIn">
+  <!-- Botão Voltar Semântico -->
+  <nav aria-label="Navegação de retorno">
+    <button
+      routerLink="/pets"
+      class="group flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors font-medium">
+      <span class="mr-2 group-hover:-translate-x-1 transition-transform">←</span>
+      Voltar para listagem
+    </button>
+  </nav>
 
   @if (loading$ | async) {
-    <div class="flex justify-center my-20">
+    <div class="flex flex-col justify-center items-center my-20 gap-4">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <p class="text-gray-500 animate-pulse">Carregando detalhes do pet...</p>
     </div>
   } @else {
     @if (pet$ | async; as pet) {
-      <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+      <article class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
 
-        <!-- Header com Destaque no Nome -->
-        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-white">
-          <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">
-            {{ pet.nome }}
-          </h1>
+        <!-- Header com Gradiente e Ações -->
+        <header class="bg-gradient-to-r from-blue-600 to-indigo-700 p-8 text-white relative">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-2">
+                {{ pet.nome }}
+              </h1>
+              <div class="flex items-center gap-2 text-blue-100">
+                <span class="bg-white/20 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
+                  {{ pet.raca }}
+                </span>
+                <span aria-hidden="true">•</span>
+                <span class="text-lg">{{ pet.idade }} {{ pet.idade === 1 ? 'ano' : 'anos' }}</span>
+              </div>
+            </div>
 
-          <button
-            [routerLink]="['/pets', pet.id, 'editar']"
-            class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg backdrop-blur-sm transition-colors flex items-center gap-2">
-            ✏️ Editar
-          </button>
-
-          <p class="text-blue-100 text-lg flex items-center">
-            <span class="bg-white/20 px-3 py-1 rounded-full text-sm font-medium">
-              {{ pet.raca }}
-            </span>
-            <span class="mx-3">•</span>
-            <span>{{ pet.idade }} anos</span>
-          </p>
-        </div>
+            <button
+              [routerLink]="['/pets', pet.id, 'editar']"
+              class="self-start md:self-center bg-white text-blue-700 hover:bg-blue-50 px-6 py-2.5 rounded-xl font-bold shadow-lg transition-all active:scale-95 flex items-center gap-2">
+              <span aria-hidden="true">✏️</span> Editar Pet
+            </button>
+          </div>
+        </header>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
-          <!-- Foto -->
-          <div>
-            <div class="rounded-xl overflow-hidden shadow-lg mb-6 aspect-square bg-gray-100">
+          <!-- Foto com Zoom no Hover -->
+          <div class="group">
+            <div class="rounded-xl overflow-hidden shadow-lg aspect-square bg-gray-100 border border-gray-200">
               <img
                 [src]="pet.foto?.url ?? defaultPetImage.url"
-                [alt]="'Imagem para' + pet.nome"
-                class="w-full h-full object-cover"
+                [alt]="'Foto de ' + pet.nome"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
             </div>
           </div>
 
           <!-- Detalhes e Tutores -->
           <div class="space-y-6">
-            <!-- Seção de Tutores -->
-            <section class="bg-gray-50 rounded-xl p-6 border border-gray-200">
-              <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+            <section class="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+              <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
                 Informações do(s) Tutor(es)
               </h2>
 
               @if (pet.tutores && pet.tutores.length > 0) {
-                <div class="space-y-4">
+                <div class="space-y-6">
                   @for (tutor of pet.tutores; track tutor.id) {
-                    <div class="flex items-start gap-4 pb-4 border-b border-gray-200 last:border-0 last:pb-0">
-                      <div class="bg-blue-100 p-3 rounded-full flex-shrink-0">
+                    <div class="flex items-start gap-4 group">
+                      <!-- Avatar do Tutor -->
+                      <div
+                        class="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border-2 border-white shadow-sm bg-blue-100 flex items-center justify-center">
                         @if (tutor.foto?.url) {
-                          <img
-                            [src]="tutor.foto?.url"
-                            [alt]="tutor.nome"
-                            class="w-10 h-10 rounded-full object-cover"
-                          />
+                          <img [src]="tutor.foto.url" [alt]="tutor.nome" class="w-full h-full object-cover"/>
                         } @else {
-                          <span class="text-blue-600 font-bold text-xl">
-                            {{ tutor.nome[0] }}
+                          <span class="text-blue-600 font-bold text-lg uppercase">
+                            {{ tutor.nome.charAt(0) }}
                           </span>
                         }
                       </div>
-                      <div class="flex-1">
-                        <p class="text-gray-900 font-bold text-lg">{{ tutor.nome }}</p>
 
-                        @if (tutor.telefone) {
-                          <p class="text-gray-600 flex items-center mt-1 text-sm">
-                            <span class="mr-2">📞</span> {{ tutor.telefone }}
-                          </p>
-                        }
+                      <div class="flex-1 min-w-0">
+                        <p class="text-gray-900 font-bold text-lg truncate">{{ tutor.nome }}</p>
 
-                        @if (tutor.email) {
-                          <p class="text-gray-600 flex items-center mt-1 text-sm">
-                            <span class="mr-2">✉️</span> {{ tutor.email }}
-                          </p>
-                        }
-
-                        @if (tutor.endereco) {
-                          <p class="text-gray-600 flex items-center mt-1 text-sm">
-                            <span class="mr-2">📍</span> {{ tutor.endereco }}
-                          </p>
-                        }
+                        <div class="mt-2 space-y-1.5">
+                          @if (tutor.telefone) {
+                            <p class="text-gray-600 flex items-center text-sm">
+                              <span class="w-5 text-gray-400" aria-hidden="true">📞</span>
+                              <span class="hover:text-blue-600 cursor-pointer">{{ tutor.telefone }}</span>
+                            </p>
+                          }
+                          @if (tutor.email) {
+                            <p class="text-gray-600 flex items-center text-sm">
+                              <span class="w-5 text-gray-400" aria-hidden="true">✉️</span>
+                              <span class="truncate">{{ tutor.email }}</span>
+                            </p>
+                          }
+                          @if (tutor.endereco) {
+                            <p class="text-gray-600 flex items-start text-sm">
+                              <span class="w-5 text-gray-400 mt-0.5" aria-hidden="true">📍</span>
+                              <span>{{ tutor.endereco }}</span>
+                            </p>
+                          }
+                        </div>
                       </div>
                     </div>
+                    @if (!$last) {
+                      <hr class="border-gray-200 my-4"/>
+                    }
                   }
                 </div>
               } @else {
-                <p class="text-gray-500 italic">Este pet ainda não possui tutor cadastrado.</p>
+                <div class="text-center py-4">
+                  <p class="text-gray-400 italic">Nenhum tutor vinculado a este pet.</p>
+                </div>
               }
             </section>
           </div>
         </div>
-      </div>
+      </article>
     } @else {
-      <div class="text-center py-20">
-        <p class="text-gray-500 text-xl">Pet não encontrado.</p>
+      <div class="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+        <span class="text-5xl mb-4 block">🔍</span>
+        <h2 class="text-xl font-bold text-gray-800">Pet não encontrado</h2>
+        <p class="text-gray-500 mt-2 mb-6">O pet que você está procurando não existe ou foi removido.</p>
+        <button routerLink="/pets"
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+          Voltar para a lista
+        </button>
       </div>
     }
   }

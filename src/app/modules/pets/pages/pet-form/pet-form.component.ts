@@ -1,29 +1,34 @@
-import {Component, OnInit, Input, inject, numberAttribute} from '@angular/core';
+import {Component, OnInit, Input, inject, numberAttribute, DestroyRef} from '@angular/core';
 import {FormBuilder, FormGroup, Validators, ReactiveFormsModule} from '@angular/forms';
-import {Router, RouterLink} from '@angular/router';
-import {AsyncPipe} from '@angular/common';
+import {Router} from '@angular/router';
 import {PetFacade} from '../../../../core/facades/pet.facade';
 import {CreatePetDto} from '../../../../core/services/pet.service';
 import {switchMap, of} from 'rxjs';
+import {FormHeaderComponent} from '../../../../shared/components/form-header/form-header.component';
+import {ImageUploadComponent} from '../../../../shared/components/image-upload/image-upload.component';
+import {FormActionsComponent} from '../../../../shared/components/form-actions/form-actions.component';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-pet-form',
   standalone: true,
-  imports: [ReactiveFormsModule, AsyncPipe, RouterLink],
+  imports: [ReactiveFormsModule, FormHeaderComponent, ImageUploadComponent, FormActionsComponent],
   templateUrl: './pet-form.component.html',
   styleUrl: './pet-form.component.scss'
 })
 export class PetFormComponent implements OnInit {
   @Input({transform: numberAttribute}) id?: number;
 
+  private router = inject(Router);
   private fb = inject(FormBuilder);
   private petFacade = inject(PetFacade);
-  private router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
 
   loading$ = this.petFacade.loading$;
+  isEditMode = false;
   selectedFile: File | null = null;
   previewUrl: string | null = null;
-  isEditMode = false;
+  errorMessage: string | null = null;
 
   petForm: FormGroup = this.fb.group({
     nome: ['', [Validators.required, Validators.minLength(2)]],
@@ -45,29 +50,28 @@ export class PetFormComponent implements OnInit {
     if (!this.id) return;
 
     this.petFacade.loadPetById(this.id);
-    this.petFacade.selectedPet$.subscribe(pet => {
-      if (pet) {
-        this.petForm.patchValue({
-          nome: pet.nome,
-          raca: pet.raca,
-          idade: pet.idade,
-        });
-        this.previewUrl = pet.foto?.url || null;
-      }
-    });
+    this.petFacade.selectedPet$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(pet => {
+        if (pet) {
+          this.petForm.patchValue({
+            nome: pet.nome,
+            raca: pet.raca,
+            idade: pet.idade,
+          });
+          this.previewUrl = pet.foto?.url || null;
+        }
+      });
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.selectedFile = input.files[0];
+  handleFileSelected(file: File): void {
+    this.selectedFile = file;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.previewUrl = e.target?.result as string;
-      };
-      reader.readAsDataURL(this.selectedFile);
+    if (this.previewUrl) {
+      URL.revokeObjectURL(this.previewUrl);
     }
+
+    this.previewUrl = URL.createObjectURL(file);
   }
 
   onSubmit(): void {
@@ -75,6 +79,8 @@ export class PetFormComponent implements OnInit {
       this.petForm.markAllAsTouched();
       return;
     }
+
+    this.errorMessage = null;
 
     const petDto: CreatePetDto = {
       nome: this.petForm.value.nome,
@@ -92,17 +98,17 @@ export class PetFormComponent implements OnInit {
           return this.petFacade.uploadPhoto(pet.id, this.selectedFile);
         }
         return of(pet);
-      })
+      }),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
         this.router.navigate(['/pets']);
       },
       error: (err) => {
         console.error('Erro ao salvar pet:', err);
-        const errorMsg = err?.error?.message
+        this.errorMessage = err?.error?.message
           || err?.message
           || 'Erro ao salvar pet. Tente novamente.';
-        alert(errorMsg);
       }
     });
   }

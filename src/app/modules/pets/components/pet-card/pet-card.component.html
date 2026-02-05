@@ -1,43 +1,61 @@
-<div class="bg-white rounded-xl shadow-md overflow-hidden
-            hover:shadow-lg transition-shadow border border-gray-100">
+<div class="group bg-white rounded-xl shadow-md overflow-hidden
+            hover:shadow-xl transition-all duration-300 border border-gray-100
+            flex flex-col h-full">
 
-  <div class="h-48 bg-gray-200 relative">
+  <!-- Container da Imagem com Aspect Ratio fixo -->
+  <div class="aspect-video bg-gray-100 relative overflow-hidden">
     <img
-      [src]="petImage.url"
-      [alt]="'Imagem para' + pet.nome"
-      class="w-full h-full object-cover"
+      [src]="pet.foto?.url || defaultPetImage.url"
+      [alt]="'Foto do pet ' + pet.nome"
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      loading="lazy"
     />
+    <!-- Badge de Espécie (Se houver no modelo futuro) -->
+    @if (pet.especie) {
+      <span
+        class="absolute top-2 right-2 bg-black/50 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full uppercase tracking-wider">
+        {{ pet.especie }}
+      </span>
+    }
   </div>
 
-  <div class="p-4">
-    <h3 class="text-xl font-bold text-gray-900 mb-1">
-      {{ pet.nome }}
-    </h3>
+  <div class="p-4 flex flex-col flex-1">
+    <div class="mb-3">
+      <h3 class="text-lg font-bold text-gray-900 truncate" [title]="pet.nome">
+        {{ pet.nome }}
+      </h3>
+      <p class="text-gray-500 text-xs italic">
+        {{ pet.raca || 'Raça não definida' }}
+      </p>
+    </div>
 
-    <p class="text-gray-600 text-sm">
-      Idade: {{ pet.idade }} anos
-    </p>
+    <div class="mt-auto">
+      <div class="flex items-center text-sm text-gray-600 mb-4">
+        <span class="flex items-center gap-1">
+          <span class="text-gray-400">🎂</span> {{ pet.idade }} {{ pet.idade === 1 ? 'ano' : 'anos' }}
+        </span>
+      </div>
 
-    <p class="text-gray-500 text-xs mt-1 italic">
-      {{ pet.raca }}
-    </p>
+      <div class="flex gap-2 w-full">
+        <button
+          (click)="onViewDetails()"
+          class="flex-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white
+                 font-bold py-2.5 rounded-lg border border-blue-100 transition-all
+                 active:scale-95 text-sm"
+          aria-label="Ver detalhes de {{ pet.nome }}">
+          Ver detalhes
+        </button>
 
-    <div class="flex gap-2 mt-4 w-full">
-      <button
-        (click)="onViewDetails()"
-        class="w-[80%] bg-gray-50 hover:bg-blue-50
-           text-blue-600 font-semibold py-2 rounded-lg
-           border border-blue-100 transition-colors">
-        Ver detalhes
-      </button>
-
-      <button
-        (click)="onEdit()"
-        title="Editar Pet"
-        class="w-[20%] flex items-center justify-center bg-gray-50 hover:bg-gray-100
-           text-gray-600 py-2 rounded-lg border border-gray-200 transition-colors">
-        ✏️
-      </button>
+        <button
+          (click)="onEdit($event)"
+          class="px-3 flex items-center justify-center bg-gray-50 hover:bg-gray-200
+                 text-gray-600 py-2.5 rounded-lg border border-gray-200 transition-all
+                 active:scale-95"
+          title="Editar Pet"
+          aria-label="Editar pet {{ pet.nome }}">
+          <span aria-hidden="true">✏️</span>
+        </button>
+      </div>
     </div>
   </div>
 </div>
