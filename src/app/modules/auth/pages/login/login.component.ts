@@ -37,11 +37,17 @@ export class Login {
         },
         error: (err) => {
           this.loadingSubject.next(false);
-          const message = err.status === 401
-            ? 'Usuário ou senha incorretos.'
-            : 'Falha na conexão. Tente novamente mais tarde.';
 
-          this.errorSubject.next(err.error?.message || message);
+          const apiMessage = err?.error?.message;
+          let message = 'Falha na conexão. Tente novamente mais tarde.';
+
+          if (err?.status === 401 || (typeof apiMessage === 'string' && /invalid credentials|incorrect credentials/i.test(apiMessage))) {
+            message = 'Usuário ou senha incorretos.';
+          } else if (typeof apiMessage === 'string' && apiMessage.trim().length > 0) {
+            message = apiMessage;
+          }
+
+          this.errorSubject.next(message);
         }
       });
     } else {

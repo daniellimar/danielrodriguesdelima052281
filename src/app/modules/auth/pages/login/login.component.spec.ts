@@ -55,7 +55,7 @@ describe('Login Component', () => {
 
     component.onSubmit();
 
-    expect(errorValue).toBe('Invalid credentials');
+    expect(errorValue).toBe('Usuário ou senha incorretos.');
   });
 
   it('should show default error message when backend error has no message', () => {
@@ -72,6 +72,6 @@ describe('Login Component', () => {
 
     component.onSubmit();
 
-    expect(errorValue).toBe('Invalid credentials. Please try again.');
+    expect(errorValue).toBe('Falha na conexão. Tente novamente mais tarde.');
   });
 });
