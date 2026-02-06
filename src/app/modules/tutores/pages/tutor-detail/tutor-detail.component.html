@@ -10,12 +10,16 @@
         </button>
         <h1 class="text-4xl font-black text-slate-800">Perfil do Tutor</h1>
       </div>
-      <div class="flex gap-3">
-        <button [routerLink]="['/tutores', tutor.id, 'editar']" *ngIf="tutor$ | async as tutor"
-                class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-purple-200 transition-all active:scale-95">
-          Editar Perfil
-        </button>
-      </div>
+
+      @if (tutor$ | async; as tutor) {
+        <div class="flex gap-3">
+          <button
+            [routerLink]="['/tutores', tutor.id, 'editar']"
+            class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-purple-200 transition-all active:scale-95">
+            Editar Perfil
+          </button>
+        </div>
+      }
     </div>
 
     @if (loading$ | async) {
