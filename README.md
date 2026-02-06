@@ -1,8 +1,10 @@
 # Pet Manager - Frontend Challenge
 
+![Descrição da imagem 1](public/images/docs/1.png)
+
 ### 📋 Sobre o Projeto
 
-O **Pet Manager** é uma aplicação de alta performance desenvolvida em **Angular 18**, projetada para o gerenciamento
+O **Pet Manager** é uma aplicação de alta performance desenvolvida em **Angular 21.1.0**, projetada para o gerenciamento
 eficiente de pets e tutores. O projeto foca em uma experiência de usuário (UX) fluida, utilizando uma arquitetura
 moderna, escalável e seguindo rigorosamente os princípios de **Clean Code** e **SOLID**.
 
@@ -17,6 +19,7 @@ moderna, escalável e seguindo rigorosamente os princípios de **Clean Code** e 
 - **Local:**  SECRETARIA DE ESTADO DE PLANEJAMENTO E GESTÃO
 
 ---
+![Descrição da imagem 2](public/images/docs/2.png)
 
 ### 🏗️ Arquitetura e Decisões Técnicas
 
@@ -32,6 +35,8 @@ isolamento de responsabilidades.
 - **Standalone Components**: Arquitetura 100% baseada em componentes independentes, facilitando o *tree-shaking* e
   reduzindo o tamanho do bundle final.
 - **OnPush Change Detection**: Estratégia adotada para otimizar a performance de renderização em listas complexas.
+
+![Descrição da imagem 3](public/images/docs/3.png)
 
 #### **UI/UX & Design System**
 
@@ -81,10 +86,23 @@ A estratégia de testes foca na confiabilidade da lógica de negócio e na integ
 - **Mocks Manuais**: Implementação de mocks leves para garantir que a suíte de testes seja rápida e independente de
   frameworks externos pesados.
 
+
+### 🖥️ Requisitos para Desenvolvimento e Testes
+
+Para executar o projeto localmente e rodar os testes, certifique-se de ter instalado em sua máquina:
+
+- **Node.js** (versão recomendada: 18.x ou superior)
+- **npm** (gerenciador de pacotes do Node.js, geralmente instalado junto com o Node.js)
+
+Você pode verificar as versões instaladas com:
+
 ```bash
+node -v
+npm -v
+
 npm test
 ```
-
+![img.png](public/images/docs/teste.png) 
 ---
 
 ### 🔒 Segurança e Resiliência
