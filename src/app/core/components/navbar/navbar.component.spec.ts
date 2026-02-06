@@ -1,23 +1,39 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
+import {RouterTestingModule} from '@angular/router/testing';
+import {NavbarComponent} from './navbar.component';
+import {AuthFacade} from '../../facades/auth.facade';
 
-import { NavbarComponent } from './navbar.component';
+class MockAuthFacade {
+  isAuthenticated = true;
+  logoutCalled = false;
+
+  logout() {
+    this.logoutCalled = true;
+  }
+}
 
 describe('NavbarComponent', () => {
-  let component: NavbarComponent;
-  let fixture: ComponentFixture<NavbarComponent>;
+  let mockAuthFacade: MockAuthFacade;
 
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [NavbarComponent]
-    })
-    .compileComponents();
+    mockAuthFacade = new MockAuthFacade();
 
-    fixture = TestBed.createComponent(NavbarComponent);
-    component = fixture.componentInstance;
-    await fixture.whenStable();
+    await TestBed.configureTestingModule({
+      imports: [RouterTestingModule, NavbarComponent],
+      providers: [{provide: AuthFacade, useValue: mockAuthFacade}],
+    }).compileComponents();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    const fixture = TestBed.createComponent(NavbarComponent);
+    const comp = fixture.componentInstance;
+    expect(comp).toBeTruthy();
+  });
+
+  it('should call logout when onLogout is invoked', () => {
+    const fixture = TestBed.createComponent(NavbarComponent);
+    const comp = fixture.componentInstance;
+    comp.onLogout();
+    expect(mockAuthFacade.logoutCalled).toBe(true);
   });
 });
