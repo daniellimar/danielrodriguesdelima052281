@@ -26,6 +26,23 @@ moderna, escalável e seguindo rigorosamente os princípios de **Clean Code** e 
 A aplicação foi estruturada utilizando o padrão **Feature-based Folder Structure**, otimizando a manutenibilidade e o
 isolamento de responsabilidades.
 
+#### **Estrutura de Pastas (Feature-based)**
+
+```text
+src/
+├── app/
+│   ├── core/                 # Singletons: Facades, Interceptors, Guards, Services
+│   ├── shared/               # Reutilizáveis: Componentes UI, Pipes, Diretivas
+│   ├── features/             # Módulos de Negócio (Lazy Loaded)
+│   │   ├── auth/             # Fluxo de Login e Autenticação
+│   │   ├── pets/             # Gestão de Pets: Listagem, Cadastro, Detalhes
+│   │   └── tutores/          # Gestão de Tutores e Vínculos
+│   ├── app.config.ts         # Configurações globais (Providers, Routes)
+│   └── app.component.ts      # Componente raiz
+├── assets/                   # Estáticos: Ícones e Configurações
+└── public/                   # Arquivos públicos e Imagens de documentação
+```
+
 #### **Core & Design Patterns**
 
 - **Facade Pattern**: Implementação de `AuthFacade` para centralizar a lógica de estado e autenticação, desacoplando os
