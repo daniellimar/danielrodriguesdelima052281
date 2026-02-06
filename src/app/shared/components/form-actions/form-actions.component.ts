@@ -11,6 +11,7 @@ import {Observable} from 'rxjs';
 })
 export class FormActionsComponent {
   @Input() cancelRoute: string = '/';
+  @Input() isSaving: Observable<boolean> | null = null;
   @Input() loading$: Observable<boolean> | null = null;
   @Input() isEditMode: boolean = false;
   @Input() submitLabel: string = 'Cadastrar';

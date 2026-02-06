@@ -128,8 +128,9 @@
     </div>
 
     <app-form-actions
-      cancelRoute="/pets"
+      cancelRoute="/tutors"
       [loading$]="loading$"
+      [isSaving]="isSaving$"
       [isEditMode]="isEditMode"
       submitLabel="Cadastrar Tutor"
       editLabel="Salvar Alterações">

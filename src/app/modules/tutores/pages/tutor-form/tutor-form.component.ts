@@ -3,7 +3,7 @@ import {FormBuilder, FormGroup, Validators, ReactiveFormsModule} from '@angular/
 import {Router} from '@angular/router';
 import {TutorFacade} from '../../../../core/facades/tutor.facade';
 import {CreateTutorDto} from '../../../../core/models/tutor.model';
-import {switchMap, of} from 'rxjs';
+import {switchMap, of, BehaviorSubject} from 'rxjs';
 import {FormActionsComponent} from '../../../../shared/components/form-actions/form-actions.component';
 import {ImageUploadComponent} from '../../../../shared/components/image-upload/image-upload.component';
 import {FormHeaderComponent} from '../../../../shared/components/form-header/form-header.component';
@@ -16,7 +16,7 @@ import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
   standalone: true,
   imports: [ReactiveFormsModule, FormActionsComponent, ImageUploadComponent, FormHeaderComponent, CpfMaskDirective, PhoneMaskDirective],
   templateUrl: './tutor-form.component.html',
-  styleUrl: './tutor-form.component.scss'
+  styleUrls: ['./tutor-form.component.scss']
 })
 export class TutorFormComponent implements OnInit {
   @Input({transform: numberAttribute}) id?: number;
@@ -27,6 +27,7 @@ export class TutorFormComponent implements OnInit {
   private tutorFacade = inject(TutorFacade);
 
   loading$ = this.tutorFacade.loading$;
+  isSaving$ = new BehaviorSubject<boolean>(false);
   isEditMode = false;
   selectedFile: File | null = null;
   previewUrl: string | null = null;
@@ -55,7 +56,7 @@ export class TutorFormComponent implements OnInit {
 
     this.tutorFacade.loadTutorById(this.id);
     this.tutorFacade.selectedTutor$
-      .pipe(takeUntilDestroyed(this.destroyRef))// Evita Memory Leak
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(tutor => {
         if (tutor) {
           this.tutorForm.patchValue({
@@ -86,6 +87,8 @@ export class TutorFormComponent implements OnInit {
       return;
     }
 
+    this.isSaving$.next(true);
+
     const tutorDto: CreateTutorDto = {
       ...this.tutorForm.value,
       cpf: String(this.tutorForm.value.cpf).replace(/\D/g, '')
@@ -104,9 +107,11 @@ export class TutorFormComponent implements OnInit {
       })
     ).subscribe({
       next: () => {
+        this.isSaving$.next(false);
         this.router.navigate(['/tutores']);
       },
       error: (err) => {
+        this.isSaving$.next(false);
         console.error('Erro ao salvar tutor:', err);
         const errorMsg = err?.error?.message || 'Erro ao salvar tutor. Tente novamente.';
         alert(errorMsg);
