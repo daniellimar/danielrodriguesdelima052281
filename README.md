@@ -1,59 +1,127 @@
-# PetManagerFrontend
+# Pet Manager - Frontend Challenge
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.2.
+### 📋 Sobre o Projeto
 
-## Development server
+O **Pet Manager** é uma aplicação de alta performance desenvolvida em **Angular 18**, projetada para o gerenciamento
+eficiente de pets e tutores. O projeto foca em uma experiência de usuário (UX) fluida, utilizando uma arquitetura
+moderna, escalável e seguindo rigorosamente os princípios de **Clean Code** e **SOLID**.
 
-To start a local development server, run:
+---
+
+### 👤 Informações do Candidato
+
+- **Nome:** Daniel Rodrigues de Lima
+- **Vaga:** Desenvolvedor Frontend (Angular)
+- **Inscrição:** 16253
+- **PROCESSO SELETIVO CONJUNTO Nº 001/2026/SEPLAG e demais Órgãos - Engenheiro da Computação - Sênior**
+- **Local:**  SECRETARIA DE ESTADO DE PLANEJAMENTO E GESTÃO
+
+---
+
+### 🏗️ Arquitetura e Decisões Técnicas
+
+A aplicação foi estruturada utilizando o padrão **Feature-based Folder Structure**, otimizando a manutenibilidade e o
+isolamento de responsabilidades.
+
+#### **Core & Design Patterns**
+
+- **Facade Pattern**: Implementação de `AuthFacade` para centralizar a lógica de estado e autenticação, desacoplando os
+  componentes dos serviços de infraestrutura.
+- **Angular Signals**: Utilização de reatividade granular com Signals para garantir atualizações de DOM ultra-eficientes
+  e reduzir o overhead de detecção de mudanças.
+- **Standalone Components**: Arquitetura 100% baseada em componentes independentes, facilitando o *tree-shaking* e
+  reduzindo o tamanho do bundle final.
+- **OnPush Change Detection**: Estratégia adotada para otimizar a performance de renderização em listas complexas.
+
+#### **UI/UX & Design System**
+
+- **Tailwind CSS**: Design System baseado em utilitários para garantir consistência visual e responsividade.
+- **Glassmorphism & Micro-interactions**: Interface moderna com efeitos de desfoque, gradientes suaves e feedbacks
+  visuais (spinners, skeletons e animações de transição).
+- **Dynamic View Engine**: Sistema que permite alternar entre modos de visualização (Grid, List, Compact) com
+  persistência de estado via `LocalStorage`.
+
+---
+
+### 🚀 Como Executar o Projeto (Infraestrutura)
+
+#### **1. Containerização (Docker + Nginx)**
+
+O artefato foi empacotado em um container multi-stage para garantir o isolamento total das dependências de build.
 
 ```bash
-ng serve
+# Build da imagem otimizada
+docker build -t pet-manager-v3 .
+
+# Execução do container (Porta 8080)
+docker run -d -p 8080:80 --name pet-app pet-manager-v3
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Acesse em: [http://localhost:8080](http://localhost:4200)
 
-## Code scaffolding
+*O servidor Nginx está configurado para lidar com o roteamento de Single Page Application (SPA), redirecionando rotas
+não encontradas para o index.html.*
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+#### **2. Desenvolvimento Local**
 
 ```bash
-ng generate component component-name
+npm install
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Acesse em: [http://localhost:4200](http://localhost:4200)
+
+---
+
+### 🧪 Qualidade e Testes
+
+A estratégia de testes foca na confiabilidade da lógica de negócio e na integridade das rotas.
+
+- **Testes Unitários**: Cobertura de componentes core e lógica de serviços.
+- **Mocks Manuais**: Implementação de mocks leves para garantir que a suíte de testes seja rápida e independente de
+  frameworks externos pesados.
 
 ```bash
-ng generate --help
+npm test
 ```
 
-## Building
+---
 
-To build the project run:
+### 🔒 Segurança e Resiliência
 
-```bash
-ng build
-```
+- **JWT Management**: Interceptor para inclusão automática de tokens e tratamento de expiração.
+- **Auto-Refresh**: Lógica de renovação de sessão integrada ao fluxo de autenticação.
+- **Route Guards**: Proteção de rotas sensíveis e redirecionamento inteligente.
+- **Error Handling**: Normalização de erros de API para mensagens amigáveis em PT-BR.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+### ✅ Requisitos Implementados
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- [x] Autenticação JWT com persistência segura.
+- [x] CRUD completo de Pets e Tutores com validações reativas.
+- [x] Dockerização otimizada (Build context reduzido de 238MB para 1.9MB).
+- [x] Interface 100% responsiva.
+- [x] Persistência de preferências de visualização do usuário.
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+### 🛠️ Priorização (Visão de Engenharia)
 
-For end-to-end (e2e) testing, run:
+Dada a restrição de tempo, a prioridade foi estabelecer uma **base sólida de infraestrutura (Docker/Nginx)** e uma **UX
+impecável**.
+**Próximos passos em um cenário real:**
 
-```bash
-ng e2e
-```
+- Implementação de Testes E2E com Playwright.
+- Estratégia de Cache com Service Workers (PWA).
+- Internacionalização (i18n) nativa do Angular.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
+### 🔑 Credenciais de Acesso
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- **Usuário:** admin
+- **Senha:** admin
+
+---
+**Daniel Rodrigues de Lima** - *Senior Frontend Engineer*
